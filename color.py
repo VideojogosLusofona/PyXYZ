@@ -92,6 +92,9 @@ class color:
         d = 1.0 / self.magnitude()
         return color(self.r * d, self.g * d, self.b * d, self.a * d)
 
+    def premult_alpha(self):
+        return color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
+
     def tuple3(self):
         return (self.r * 255, self.g * 255, self.b * 255)
 

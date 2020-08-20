@@ -117,6 +117,10 @@ class vector3:
     def from_np(np_array):
         return vector3(np_array[0], np_array[1], np_array[2])
 
+    @staticmethod
+    def distance(v1, v2):
+        return (v1 - v2).magnitude()
+
 def dot_product(v1, v2):
     return v1.dot(v2)
 

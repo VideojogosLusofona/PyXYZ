@@ -8,6 +8,8 @@ class Camera(Object3d):
         self.ortho = ortho
         self.res_x = res_x
         self.res_y = res_y
+        self.near_plane = 1
+        self.far_plane = 100
         self.fov = math.radians(30)
 
     def get_projection_matrix(self):
@@ -24,8 +26,8 @@ class Camera(Object3d):
             self.proj_matrix[0,0] = 0.5 * self.res_x / t
             self.proj_matrix[1,1] = 0.5 * self.res_y / (a * t)
             self.proj_matrix[2,3] = 1
-            self.proj_matrix[3,0] = 0
-            self.proj_matrix[3,1] = 0
+            self.proj_matrix[2,2] = self.far_plane / (self.far_plane - self.near_plane)
+            self.proj_matrix[3,2] = self.proj_matrix[2,2] * self.near_plane
 
         return self.proj_matrix
 
@@ -49,3 +51,17 @@ class Camera(Object3d):
         rotation_matrix[3,3] = 1
 
         return trans @ rotation_matrix
+
+    def RayFromNDC(self, pos):
+
+        vpos = vector3(pos[0], pos[1], self.near_plane)
+        vpos.x =  vpos.x * self.res_x * 0.5
+        vpos.y = -vpos.y * self.res_y * 0.5
+        
+        inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
+        inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
+
+        dir = inv_view_proj_matrix @ vpos.to_np4(1)
+        dir = vector3.from_np(dir).normalized()
+
+        return self.position + dir * self.near_plane, dir

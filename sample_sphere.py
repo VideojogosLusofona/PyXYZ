@@ -29,7 +29,6 @@ def main():
     scene.camera.position -= vector3(0,0,2)
 
     # Create a sphere and place it in a scene, at position (0,0,0)
-    # This cube has 1 unit of radius, and is red
     obj1 = Object3d("TestObject")
     obj1.scale = vector3(1, 1, 1)
     obj1.position = vector3(0, 0, 0)
