@@ -1,10 +1,10 @@
-# Introdução à Matemática e Física Para Videojogos I - Final Project
+# PyXYZ
 
-This is a very rudimentary, wireframe 3d engine.
+PyXYZ (pronounced _pyxies_) is a a simple 3D wireframe engine for education, entirely programmed in Python.
 
-![alt text](https://github.com/VideojogosLusofona/imfj1_2019_projecto/raw/master/screenshots/title.png "Sample application")
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
 
-This serves as a basis for the "Introdução à Matemática e Física Para Videojogos I" course, on the [Licenciatura em Videojogos][lv] da
+This engine serves as a basis for the "Introdução à Matemática e Física Para Videojogos I" course, on the [Licenciatura em Videojogos][lv] da
 [Universidade Lusófona de Humanidades e Tecnologias][ULHT] in Lisbon.
 
 The engine was built using:
@@ -13,59 +13,33 @@ The engine was built using:
 * Numpy (https://numpy.org/devdocs/user/quickstart.html)
 * Numpy-quaternion (https://pypi.org/project/numpy-quaternion/)
 
-There is a sample application that can be run by using:
-`py.exe sample.py` or `python sample.py` or `python3.6 sample.py`, depending on your Python installation.
+## Architecture
 
-## Assignment
+PyXYZ is an object-oriented engine, with the main design focus on simplicity and ease of learning and extension. 
 
-The assignment for the course is as follows:
-* Build a "Viewer" application. You can use the sample application as a basis. That application has to feature the following functionality:
-  - Display a 3d object (see below) in the centre of the screen. Control of the visualization has to be done using the following keys:
-    - Left/Right arrow: Rotate object around its Y axis
-    - Up/Down arrow: Rotate object around its X axis
-    - PgUp/PgDown: Rotate object around its Z axis
-    - W/S: Move object up and down relative to the screen
-    - A/D: Move object right and left relative to the screen
-    - Q/E: Move object forward or back relative to the screen
-  - Create a model other than a cube for this display. That model can be loaded from a file (in a format like JSON, etc) or can be built totally   in code. The model has to include sub-objects (like in the sample the object is made of the red cube and a child green cube)
-* Build a "FPS-like" application.
-  - Create an environment where the player can roam using standard FPS controls. The environment can be just a series of cubes with different scales and positions
-  - Implement backface culling.
-    - Backface culling stops the polygons that are facing away from the camera from being renderer
-    - Hint: You can use the "face normal" and a dot product to detect these cases
-    - You can check this video for a more in-depth explanation: https://www.youtube.com/watch?v=ShTiQGxiZRk
-  - Implement filled geometry, replacing the wireframe
-    - Hint: you'll have to sort objects by distance and draw back to front)
-  - Stop objects that are behind the camera from being renderered
-    - You can do this per-object, or per polygon
-  - Implement very simple point lighting:
-    - Create a PointLight3d class and extend the Scene class so you're able to add light(s) to it
-    - Implement shading based on the light:
-      - Hint: Light intensity = max(0, dot(Face Normal, Incoming Light Direction))
-      - Hint: Polygon Color = Light Intensity * Color
-      
-## Project delivery
+It provides very little functionality out-of-the- box: it allows for the programmer to visualize a 3D scene using a virtual camera.
 
-* Project can be made individually or with a group of up to 3 students.
-* Git commit history will be analyzed to see individual work of students in the overall project
-* Project has to be delivered up 20th January 2020 (midnight), and link delivered on the course's Moodle page
-  - Deliverables have to include a link to the Github repo
-    - If you want to use a private repository, instead of a public one, you can deliver all the files in a .zip file, __**INCLUDING**__ the .git directory for git usage analysis 
-  - Only one student in the group need to turn in the project
-  - Project has to include a report, in a `readme.md` file. This report has to include the work done on the project, and the individual contributions of the group.
-  - Report should also include (besides the names and numbers of students), their Github account username.
-  - Report has to be formated in Markdown, as taught on the November workshop.
-  - Extra credit on reports that include a short postmortem, where students explain what went right with the project and what went wrong
-* Grade will consider the following:
-  - How much was achieved from the overal goals
-    - Viewer application is considered the minimum viable delivery
-  - Functionality and lack of bugs
-  - Overall quality of code, including documentation
-  - GIT usage throughout the project, as well as individual contributions of students
+A scene is composed of 3D objects organized in an optional hierarchical fashion, and each object contains a polygonal mesh and a material that controls how the mesh is rendered. 
 
-## Installation of required modules
+At the most basic level, it has a few elementary helper classes, like Color, which describes a color with separate red, green, blue and alpha channels, and Vector3, a straightforward 3D vector implementation.
 
-To run the sample application, you'll have to install all the used modules:
+The core of the engine is comprised of the Scene, Object3d, Camera and Mesh classes, which handle the rendering itself. 
+
+An Object3d has the position, rotation and scaling (PRS properties), all of which are in local space. It also stores the reference for a mesh and a material, and contains a list of child Object3d, which enables the user to build the hierarchical scene graph. 
+
+A Scene stores the scene graph with any number of Objects3d on the root level. It also contains a camera, that is used for the rendering. 
+
+The Camera is derived from Object3d, so that it can be treated in the same way, and even parented to other objects, or vice-versa. It also provides a simple function to convert from screen space coordinates to a ray origin/position.
+
+The Mesh contains a list of polygons, with each polygon being a list of vertex positions in local space. There are no indexing primitives as simplicity is the main driver of the engine. 
+
+The Material class stores the rendering properties like line color and width. A single material can be used by multiple meshes for rendering.
+
+The current implementation of PyXYZ uses Pygame for the actual render- ing. We chose Pygame for its simplicity, support for polygon rendering and full software implementation.
+
+## Installation
+
+To use PyXYZ, you'll have to install all the used modules:
 
 * `pip install pygame`
 * `pip install numpy`
@@ -89,25 +63,75 @@ For numpy-quaternion, you can get the files from `https://www.lfd.uci.edu/~gohlk
 
 To install a wheel manually, you just have to run the command: `pip install <wheel name>` or `python -m pip install <wheel name>` from the directory where the wheel was downloaded to.
 
-## Work on the project
+## Basic Usage
 
-We recomend building a fork of this project, and doing additional work on your repository. 
+First the programmer sets up Pygame, using something similar to:
 
-* Create a copy (fork) of this repository (normally called _upstream_) in your Github account (**Fork** button in the upper right corner). The copy of the repository is usually called _origin_
-* Get a local copy (on your PC) of the _origin_ repository, with the comand `git clone https://github.com/<your_username>/imfj1_2019_projecto.git` (replace `<your username>` by your username in Github)
-* Link the local repository with the remote _upstream_ repository with the command: `git remote add upstream https://VideojogosLusofona/imfj1_2019_projecto.git`
+~~~
+pygame.init()
+screen = pygame.display.set_mode((640, 480))
+~~~
 
-Periodically, update your repository with changes done on the source `imfj1_2019_projecto` repo (in case bug fixes are introduced):
+Then, a scene can be setup:
 
-* Make sure you're working on the _master_ branch:
-  - `git checkout master`
-* Download any updates on the imfj1_2019_projecto source repository by merging them with your _master_ branch:
-  - `git fetch upstream`
-  - `git merge upstream/master`
-* Upload (_push_) the changes on _upstream_ to the _origin_ repository:
-  - `git push origin master`
+~~~
+# Create a scene
+scene = Scene("TestScene")
+scene.camera = Camera(False , res_x , res_y)
+# Moves the camera back 2 units
+scene.camera.position -= vector3(0,0,2)
+# Create a sphere and place it in a scene, at position (0,0,0) 
+obj1 = Object3d("TestObject")
+obj1.scale = vector3(1, 1, 1)
+obj1.position = vector3(0, 0, 0)
+# Set the material of the sphere, in this case it is red
+obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) obj1.material = Material(color(1,0,0,1), "TestMaterial1") scene.add_object(obj1)
+~~~
 
-Do your normal work and commit/pull/push as taught. Grade will take in account how well GIT is used throughout the project.
+To render the scene, the programmer just has to use:
+
+~~~
+scene.render(screen)
+~~~
+
+## Sample applications
+
+All the sample applications implement an application loop. A window is open, the content is displayed there, and the user can quit by pressing the ESC quit or closing the window.
+
+### Sphere (sample_sphere.py)
+
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/sphere.png "Sample sphere application")
+
+The simplest sample, it just creates a red sphere on the center of the viewport and rotates it slowly.
+
+### Hierachy (sample_hierarchy.py)
+
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/hierarchy.png "Sample hierarchy application")
+
+This application demonstrates the use of hierarchies. Hierarchies can be created by adding objects as children of other objects. The PRS of child objects will be considered to be in local space (the space of the parent).
+
+### Cube fall (sample_cubefall.py)
+
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/cubefall.png "Sample cube fall application")
+
+In this application, cubes are spawned on top of the screen and fall
+down with gravity. This demonstrates one way of creating/destroing objects through the life cycle of the application.
+
+It also shows the use of creating classes derived from Object3d (use of hierarchy-based extension instead of component-based)
+
+### Terrain (sample_terrain.py)
+
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
+
+This application generates a terrain based on a 2-octave Perlin noise, colors the generated polygons based on height and slope, and rotates the terrain in front of the camera.
+
+This makes use of a helper 2d perlin generator that's part of PyXYZ.
+
+### Missile Game (sample_game.py)
+
+![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
+
+This is a sort of incomplete game: the player can shoot some missiles using the mouse, and it demonstrates user input and a more complex application loop. It also shows functionality like creating a mesh from different parts, converting a mouse position into a ray, sphere/sphere collision detection, target tracking and a rudimentary screen flash effect. The game is not complete, since it doesn’t have win/lose condition
 
 ## Licenses
 

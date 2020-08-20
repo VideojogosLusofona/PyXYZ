@@ -52,7 +52,7 @@ def main():
     scene.camera.position -= vector3(0,0,2)
 
     cube_mesh = Mesh.create_cube((1,1,1))
-    spawn_rate = 0.1
+    spawn_rate = 0.025
     cube_spawn_time = spawn_rate
     falling_objects = []
 
