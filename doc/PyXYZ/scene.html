@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>PyXYZ.scene API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Scene class definition" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,34 +22,69 @@
 <h1 class="title">Module <code>PyXYZ.scene</code></h1>
 </header>
 <section id="section-intro">
+<p>Scene class definition</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">from camera import *
+<pre><code class="python">&#34;&#34;&#34;Scene class definition&#34;&#34;&#34;
+from camera import Camera
 
 class Scene:
+    &#34;&#34;&#34;Scene class.
+    It handles a scene, storing a list of objects and a camera/viewpoint&#34;&#34;&#34;
     def __init__(self, name):
+        &#34;&#34;&#34;
+        Arguments:
+
+            name {str} -- Name of the material, defaults to &#39;UnknownMesh&#39;
+        &#34;&#34;&#34;
         self.name = name
+        &#34;&#34;&#34; {str} Name of the scene&#34;&#34;&#34;
         self.camera = Camera(True, 640, 480)
+        &#34;&#34;&#34; {Camera} Camera linked to this scene&#34;&#34;&#34;
         self.objects = []
+        &#34;&#34;&#34; {List[Object3d]} List of 3d objects on the scene&#34;&#34;&#34;
 
     def add_object(self, obj):
-        self.objects.append(obj)
+        &#34;&#34;&#34;Adds a 3d object to the scene.
+
+        Arguments:
+
+            obj {Object3d} -- 3d object to add to the scene
+        &#34;&#34;&#34;
+        if obj not in self.objects:
+            self.objects.append(obj)
 
     def remove_object(self, obj):
-        if (obj in self.objects):
+        &#34;&#34;&#34;Removes a 3d object from the scene. This function does not scan the child objects,
+        so it&#39;s only used to remove objects at the root level. If the object is not at the root
+        level of the scene, nothing happens
+
+        Arguments:
+
+            obj {Object3d} -- 3d object to remove from the scene
+        &#34;&#34;&#34;
+        if obj in self.objects:
             self.objects.remove(obj)
 
     def render(self, screen):
+        &#34;&#34;&#34;Renders this scene on the given target
 
+        Arguments:
+
+            screen {pygame.Surface} -- Pygame surface where the scene should be drawn
+        &#34;&#34;&#34;
+        # Create clip matrix to be passed to the root-level objects, so they can be drawn
         camera_matrix = self.camera.get_camera_matrix()
         projection_matrix = self.camera.get_projection_matrix()
 
         clip_matrix = camera_matrix @ projection_matrix
 
+        # Render all root-level objects
         for obj in self.objects:
-            obj.render(screen, clip_matrix)</code></pre>
+            obj.render(screen, clip_matrix)
+            </code></pre>
 </details>
 </section>
 <section>
@@ -66,60 +101,131 @@ class Scene:
 <span>(</span><span>name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Scene class.
+It handles a scene, storing a list of objects and a camera/viewpoint</p>
+<h2 id="arguments">Arguments</h2>
+<p>name {str} &ndash; Name of the material, defaults to 'UnknownMesh'</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Scene:
+    &#34;&#34;&#34;Scene class.
+    It handles a scene, storing a list of objects and a camera/viewpoint&#34;&#34;&#34;
     def __init__(self, name):
+        &#34;&#34;&#34;
+        Arguments:
+
+            name {str} -- Name of the material, defaults to &#39;UnknownMesh&#39;
+        &#34;&#34;&#34;
         self.name = name
+        &#34;&#34;&#34; {str} Name of the scene&#34;&#34;&#34;
         self.camera = Camera(True, 640, 480)
+        &#34;&#34;&#34; {Camera} Camera linked to this scene&#34;&#34;&#34;
         self.objects = []
+        &#34;&#34;&#34; {List[Object3d]} List of 3d objects on the scene&#34;&#34;&#34;
 
     def add_object(self, obj):
-        self.objects.append(obj)
+        &#34;&#34;&#34;Adds a 3d object to the scene.
+
+        Arguments:
+
+            obj {Object3d} -- 3d object to add to the scene
+        &#34;&#34;&#34;
+        if obj not in self.objects:
+            self.objects.append(obj)
 
     def remove_object(self, obj):
-        if (obj in self.objects):
+        &#34;&#34;&#34;Removes a 3d object from the scene. This function does not scan the child objects,
+        so it&#39;s only used to remove objects at the root level. If the object is not at the root
+        level of the scene, nothing happens
+
+        Arguments:
+
+            obj {Object3d} -- 3d object to remove from the scene
+        &#34;&#34;&#34;
+        if obj in self.objects:
             self.objects.remove(obj)
 
     def render(self, screen):
+        &#34;&#34;&#34;Renders this scene on the given target
 
+        Arguments:
+
+            screen {pygame.Surface} -- Pygame surface where the scene should be drawn
+        &#34;&#34;&#34;
+        # Create clip matrix to be passed to the root-level objects, so they can be drawn
         camera_matrix = self.camera.get_camera_matrix()
         projection_matrix = self.camera.get_projection_matrix()
 
         clip_matrix = camera_matrix @ projection_matrix
 
+        # Render all root-level objects
         for obj in self.objects:
             obj.render(screen, clip_matrix)</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="PyXYZ.scene.Scene.camera"><code class="name">var <span class="ident">camera</span></code></dt>
+<dd>
+<div class="desc"><p>{Camera} Camera linked to this scene</p></div>
+</dd>
+<dt id="PyXYZ.scene.Scene.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>{str} Name of the scene</p></div>
+</dd>
+<dt id="PyXYZ.scene.Scene.objects"><code class="name">var <span class="ident">objects</span></code></dt>
+<dd>
+<div class="desc"><p>{List[Object3d]} List of 3d objects on the scene</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
 <dt id="PyXYZ.scene.Scene.add_object"><code class="name flex">
 <span>def <span class="ident">add_object</span></span>(<span>self, obj)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Adds a 3d object to the scene.</p>
+<h2 id="arguments">Arguments</h2>
+<p>obj {Object3d} &ndash; 3d object to add to the scene</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_object(self, obj):
-    self.objects.append(obj)</code></pre>
+    &#34;&#34;&#34;Adds a 3d object to the scene.
+
+    Arguments:
+
+        obj {Object3d} -- 3d object to add to the scene
+    &#34;&#34;&#34;
+    if obj not in self.objects:
+        self.objects.append(obj)</code></pre>
 </details>
 </dd>
 <dt id="PyXYZ.scene.Scene.remove_object"><code class="name flex">
 <span>def <span class="ident">remove_object</span></span>(<span>self, obj)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Removes a 3d object from the scene. This function does not scan the child objects,
+so it's only used to remove objects at the root level. If the object is not at the root
+level of the scene, nothing happens</p>
+<h2 id="arguments">Arguments</h2>
+<p>obj {Object3d} &ndash; 3d object to remove from the scene</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def remove_object(self, obj):
-    if (obj in self.objects):
+    &#34;&#34;&#34;Removes a 3d object from the scene. This function does not scan the child objects,
+    so it&#39;s only used to remove objects at the root level. If the object is not at the root
+    level of the scene, nothing happens
+
+    Arguments:
+
+        obj {Object3d} -- 3d object to remove from the scene
+    &#34;&#34;&#34;
+    if obj in self.objects:
         self.objects.remove(obj)</code></pre>
 </details>
 </dd>
@@ -127,18 +233,27 @@ class Scene:
 <span>def <span class="ident">render</span></span>(<span>self, screen)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Renders this scene on the given target</p>
+<h2 id="arguments">Arguments</h2>
+<p>screen {pygame.Surface} &ndash; Pygame surface where the scene should be drawn</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def render(self, screen):
+    &#34;&#34;&#34;Renders this scene on the given target
 
+    Arguments:
+
+        screen {pygame.Surface} -- Pygame surface where the scene should be drawn
+    &#34;&#34;&#34;
+    # Create clip matrix to be passed to the root-level objects, so they can be drawn
     camera_matrix = self.camera.get_camera_matrix()
     projection_matrix = self.camera.get_projection_matrix()
 
     clip_matrix = camera_matrix @ projection_matrix
 
+    # Render all root-level objects
     for obj in self.objects:
         obj.render(screen, clip_matrix)</code></pre>
 </details>
@@ -163,8 +278,11 @@ class Scene:
 <ul>
 <li>
 <h4><code><a title="PyXYZ.scene.Scene" href="#PyXYZ.scene.Scene">Scene</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="PyXYZ.scene.Scene.add_object" href="#PyXYZ.scene.Scene.add_object">add_object</a></code></li>
+<li><code><a title="PyXYZ.scene.Scene.camera" href="#PyXYZ.scene.Scene.camera">camera</a></code></li>
+<li><code><a title="PyXYZ.scene.Scene.name" href="#PyXYZ.scene.Scene.name">name</a></code></li>
+<li><code><a title="PyXYZ.scene.Scene.objects" href="#PyXYZ.scene.Scene.objects">objects</a></code></li>
 <li><code><a title="PyXYZ.scene.Scene.remove_object" href="#PyXYZ.scene.Scene.remove_object">remove_object</a></code></li>
 <li><code><a title="PyXYZ.scene.Scene.render" href="#PyXYZ.scene.Scene.render">render</a></code></li>
 </ul>

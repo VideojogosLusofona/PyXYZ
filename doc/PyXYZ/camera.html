@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>PyXYZ.camera API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Camera class definition" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,50 +22,92 @@
 <h1 class="title">Module <code>PyXYZ.camera</code></h1>
 </header>
 <section id="section-intro">
+<p>Camera class definition</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
-from object3d import *
+<pre><code class="python">&#34;&#34;&#34;Camera class definition&#34;&#34;&#34;
+
+import math
+import numpy as np
+from quaternion import as_rotation_matrix
+from vector3 import vector3
+from object3d import Object3d
 
 class Camera(Object3d):
+    &#34;&#34;&#34;Camera class.
+    It allows us to have a viewport into the scene. Each scene has a camera set.&#34;&#34;&#34;
+
     def __init__(self, ortho, res_x, res_y):
+        &#34;&#34;&#34;
+        Arguments:
+            ortho {bool} - True if this is an ortographic camera, false otherwise.
+
+            res_x {int} - Horizontal resolution of the window. This will be the size of the window
+            in ortographic view
+
+            res_y {int} - Vertical resolution of the window. This will be the size of the window in
+            ortographic view
+        &#34;&#34;&#34;
         super().__init__(self)
 
         self.ortho = ortho
+        &#34;&#34;&#34;{bool} True if this is an ortographic camera, false otherwise&#34;&#34;&#34;
         self.res_x = res_x
+        &#34;&#34;&#34;{int} Horizontal resolution of the window. This will be the size of the window in
+        ortographic view&#34;&#34;&#34;
         self.res_y = res_y
+        &#34;&#34;&#34;{int} Vertical resolution of the window. This will be the size of the window in
+        ortographic view&#34;&#34;&#34;
         self.near_plane = 1
+        &#34;&#34;&#34;{number} Distance from the camera to the near plane. Defaults to 1&#34;&#34;&#34;
         self.far_plane = 100
-        self.fov = math.radians(30)
+        &#34;&#34;&#34;{number} Distance from the camera to the far plane. Defaults to 100&#34;&#34;&#34;
+        self.fov = math.radians(60)
+        &#34;&#34;&#34;{number} Field of view angle (in radians) of the camera (if in perspective mode)&#34;&#34;&#34;
+        self.proj_matrix = np.identity(4)
+        &#34;&#34;&#34;{np.array} Projection matrix. This is only set after get_projection_matrix is called
+        once&#34;&#34;&#34;
 
     def get_projection_matrix(self):
+        &#34;&#34;&#34;Retrieves the projection matrix of this camera.
+        This function sets up the proj_matrix attribute as well.
+
+        Returns:
+            np.array - Projection matrix of this camera
+        &#34;&#34;&#34;
         self.proj_matrix = np.zeros((4, 4))
-        if (self.ortho):
-            self.proj_matrix[0,0] = self.res_x * 0.5
-            self.proj_matrix[1,1] = self.res_y * 0.5
-            self.proj_matrix[3,0] = 0
-            self.proj_matrix[3,1] = 0
-            self.proj_matrix[3,3] = 1
+        if self.ortho:
+            self.proj_matrix[0, 0] = self.res_x * 0.5
+            self.proj_matrix[1, 1] = self.res_y * 0.5
+            self.proj_matrix[3, 0] = 0
+            self.proj_matrix[3, 1] = 0
+            self.proj_matrix[3, 3] = 1
         else:
-            t = math.tan(self.fov)
+            t = math.tan(self.fov * 0.5)
             a = self.res_y / self.res_x
-            self.proj_matrix[0,0] = 0.5 * self.res_x / t
-            self.proj_matrix[1,1] = 0.5 * self.res_y / (a * t)
-            self.proj_matrix[2,3] = 1
-            self.proj_matrix[2,2] = self.far_plane / (self.far_plane - self.near_plane)
-            self.proj_matrix[3,2] = self.proj_matrix[2,2] * self.near_plane
+            self.proj_matrix[0, 0] = 0.5 * self.res_x / t
+            self.proj_matrix[1, 1] = 0.5 * self.res_y / (a * t)
+            self.proj_matrix[2, 3] = 1
+            self.proj_matrix[2, 2] = self.far_plane / (self.far_plane - self.near_plane)
+            self.proj_matrix[3, 2] = self.proj_matrix[2, 2] * self.near_plane
 
         return self.proj_matrix
 
     def get_camera_matrix(self):
-        trans = np.identity(4)
-        trans[3,0] = -self.position.x
-        trans[3,1] = -self.position.y
-        trans[3,2] = -self.position.z    
+        &#34;&#34;&#34;Retrieves the view matrix of this camera. This is basically the same as a PRS matrix
+        without scalling, and with the position and rotation negated.
 
-        qrot  = as_rotation_matrix(self.rotation.inverse())
+        Returns:
+            np.array - View matrix of this camera
+        &#34;&#34;&#34;
+        trans = np.identity(4)
+        trans[3, 0] = -self.position.x
+        trans[3, 1] = -self.position.y
+        trans[3, 2] = -self.position.z
+
+        qrot = as_rotation_matrix(self.rotation.inverse())
         rotation_matrix = np.identity(4)
         rotation_matrix[0][0] = qrot[0][0]
         rotation_matrix[0][1] = qrot[0][1]
@@ -76,23 +118,40 @@ class Camera(Object3d):
         rotation_matrix[2][0] = qrot[2][0]
         rotation_matrix[2][1] = qrot[2][1]
         rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3,3] = 1
+        rotation_matrix[3][3] = 1
 
         return trans @ rotation_matrix
 
-    def RayFromNDC(self, pos):
+    def ray_from_ndc(self, pos):
+        &#34;&#34;&#34;Retrieves a ray (origin, direction) corresponding to the given position on screen.
+        This function takes the coordinates as NDC (normalized device coordinates), in which the
+        lower-left corner of the screen corresponds to (-1,-1) and the upper-right corresponds to
+        (1,1).
+        For example, to convert mouse coordinates to NDC, you could do something like:
+
+        &gt;&gt;&gt; mouse_pos = pygame.mouse.get_pos()
+        &gt;&gt;&gt; mouse_pos = ((mouse_pos[0] / res_x) * 2 - 1, (mouse_pos[1] / res_y) * 2 - 1)
+        &gt;&gt;&gt; origin, dir = camera.RayFromNDC(mouse_pos)
+
+        Arguments:
+            pos {2-tuple} -- Screen position in NDC (normalized device coordinates)
+
+        Returns:
+            vector3, vector3 - Origin and direction of the ray corresponding to that screen
+            positions
+        &#34;&#34;&#34;
 
         vpos = vector3(pos[0], pos[1], self.near_plane)
-        vpos.x =  vpos.x * self.res_x * 0.5
+        vpos.x = vpos.x * self.res_x * 0.5
         vpos.y = -vpos.y * self.res_y * 0.5
-        
+
         inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
         inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
 
-        dir = inv_view_proj_matrix @ vpos.to_np4(1)
-        dir = vector3.from_np(dir).normalized()
+        direction = inv_view_proj_matrix @ vpos.to_np4(1)
+        direction = vector3.from_np(direction).normalized()
 
-        return self.position + dir * self.near_plane, dir</code></pre>
+        return self.position + direction * self.near_plane, direction</code></pre>
 </details>
 </section>
 <section>
@@ -109,48 +168,91 @@ class Camera(Object3d):
 <span>(</span><span>ortho, res_x, res_y)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Camera class.
+It allows us to have a viewport into the scene. Each scene has a camera set.</p>
+<h2 id="arguments">Arguments</h2>
+<p>ortho {bool} - True if this is an ortographic camera, false otherwise.</p>
+<p>res_x {int} - Horizontal resolution of the window. This will be the size of the window
+in ortographic view</p>
+<p>res_y {int} - Vertical resolution of the window. This will be the size of the window in
+ortographic view</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Camera(Object3d):
+    &#34;&#34;&#34;Camera class.
+    It allows us to have a viewport into the scene. Each scene has a camera set.&#34;&#34;&#34;
+
     def __init__(self, ortho, res_x, res_y):
+        &#34;&#34;&#34;
+        Arguments:
+            ortho {bool} - True if this is an ortographic camera, false otherwise.
+
+            res_x {int} - Horizontal resolution of the window. This will be the size of the window
+            in ortographic view
+
+            res_y {int} - Vertical resolution of the window. This will be the size of the window in
+            ortographic view
+        &#34;&#34;&#34;
         super().__init__(self)
 
         self.ortho = ortho
+        &#34;&#34;&#34;{bool} True if this is an ortographic camera, false otherwise&#34;&#34;&#34;
         self.res_x = res_x
+        &#34;&#34;&#34;{int} Horizontal resolution of the window. This will be the size of the window in
+        ortographic view&#34;&#34;&#34;
         self.res_y = res_y
+        &#34;&#34;&#34;{int} Vertical resolution of the window. This will be the size of the window in
+        ortographic view&#34;&#34;&#34;
         self.near_plane = 1
+        &#34;&#34;&#34;{number} Distance from the camera to the near plane. Defaults to 1&#34;&#34;&#34;
         self.far_plane = 100
-        self.fov = math.radians(30)
+        &#34;&#34;&#34;{number} Distance from the camera to the far plane. Defaults to 100&#34;&#34;&#34;
+        self.fov = math.radians(60)
+        &#34;&#34;&#34;{number} Field of view angle (in radians) of the camera (if in perspective mode)&#34;&#34;&#34;
+        self.proj_matrix = np.identity(4)
+        &#34;&#34;&#34;{np.array} Projection matrix. This is only set after get_projection_matrix is called
+        once&#34;&#34;&#34;
 
     def get_projection_matrix(self):
+        &#34;&#34;&#34;Retrieves the projection matrix of this camera.
+        This function sets up the proj_matrix attribute as well.
+
+        Returns:
+            np.array - Projection matrix of this camera
+        &#34;&#34;&#34;
         self.proj_matrix = np.zeros((4, 4))
-        if (self.ortho):
-            self.proj_matrix[0,0] = self.res_x * 0.5
-            self.proj_matrix[1,1] = self.res_y * 0.5
-            self.proj_matrix[3,0] = 0
-            self.proj_matrix[3,1] = 0
-            self.proj_matrix[3,3] = 1
+        if self.ortho:
+            self.proj_matrix[0, 0] = self.res_x * 0.5
+            self.proj_matrix[1, 1] = self.res_y * 0.5
+            self.proj_matrix[3, 0] = 0
+            self.proj_matrix[3, 1] = 0
+            self.proj_matrix[3, 3] = 1
         else:
-            t = math.tan(self.fov)
+            t = math.tan(self.fov * 0.5)
             a = self.res_y / self.res_x
-            self.proj_matrix[0,0] = 0.5 * self.res_x / t
-            self.proj_matrix[1,1] = 0.5 * self.res_y / (a * t)
-            self.proj_matrix[2,3] = 1
-            self.proj_matrix[2,2] = self.far_plane / (self.far_plane - self.near_plane)
-            self.proj_matrix[3,2] = self.proj_matrix[2,2] * self.near_plane
+            self.proj_matrix[0, 0] = 0.5 * self.res_x / t
+            self.proj_matrix[1, 1] = 0.5 * self.res_y / (a * t)
+            self.proj_matrix[2, 3] = 1
+            self.proj_matrix[2, 2] = self.far_plane / (self.far_plane - self.near_plane)
+            self.proj_matrix[3, 2] = self.proj_matrix[2, 2] * self.near_plane
 
         return self.proj_matrix
 
     def get_camera_matrix(self):
-        trans = np.identity(4)
-        trans[3,0] = -self.position.x
-        trans[3,1] = -self.position.y
-        trans[3,2] = -self.position.z    
+        &#34;&#34;&#34;Retrieves the view matrix of this camera. This is basically the same as a PRS matrix
+        without scalling, and with the position and rotation negated.
 
-        qrot  = as_rotation_matrix(self.rotation.inverse())
+        Returns:
+            np.array - View matrix of this camera
+        &#34;&#34;&#34;
+        trans = np.identity(4)
+        trans[3, 0] = -self.position.x
+        trans[3, 1] = -self.position.y
+        trans[3, 2] = -self.position.z
+
+        qrot = as_rotation_matrix(self.rotation.inverse())
         rotation_matrix = np.identity(4)
         rotation_matrix[0][0] = qrot[0][0]
         rotation_matrix[0][1] = qrot[0][1]
@@ -161,70 +263,106 @@ class Camera(Object3d):
         rotation_matrix[2][0] = qrot[2][0]
         rotation_matrix[2][1] = qrot[2][1]
         rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3,3] = 1
+        rotation_matrix[3][3] = 1
 
         return trans @ rotation_matrix
 
-    def RayFromNDC(self, pos):
+    def ray_from_ndc(self, pos):
+        &#34;&#34;&#34;Retrieves a ray (origin, direction) corresponding to the given position on screen.
+        This function takes the coordinates as NDC (normalized device coordinates), in which the
+        lower-left corner of the screen corresponds to (-1,-1) and the upper-right corresponds to
+        (1,1).
+        For example, to convert mouse coordinates to NDC, you could do something like:
+
+        &gt;&gt;&gt; mouse_pos = pygame.mouse.get_pos()
+        &gt;&gt;&gt; mouse_pos = ((mouse_pos[0] / res_x) * 2 - 1, (mouse_pos[1] / res_y) * 2 - 1)
+        &gt;&gt;&gt; origin, dir = camera.RayFromNDC(mouse_pos)
+
+        Arguments:
+            pos {2-tuple} -- Screen position in NDC (normalized device coordinates)
+
+        Returns:
+            vector3, vector3 - Origin and direction of the ray corresponding to that screen
+            positions
+        &#34;&#34;&#34;
 
         vpos = vector3(pos[0], pos[1], self.near_plane)
-        vpos.x =  vpos.x * self.res_x * 0.5
+        vpos.x = vpos.x * self.res_x * 0.5
         vpos.y = -vpos.y * self.res_y * 0.5
-        
+
         inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
         inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
 
-        dir = inv_view_proj_matrix @ vpos.to_np4(1)
-        dir = vector3.from_np(dir).normalized()
+        direction = inv_view_proj_matrix @ vpos.to_np4(1)
+        direction = vector3.from_np(direction).normalized()
 
-        return self.position + dir * self.near_plane, dir</code></pre>
+        return self.position + direction * self.near_plane, direction</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>object3d.Object3d</li>
 </ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="PyXYZ.camera.Camera.far_plane"><code class="name">var <span class="ident">far_plane</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Distance from the camera to the far plane. Defaults to 100</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.fov"><code class="name">var <span class="ident">fov</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Field of view angle (in radians) of the camera (if in perspective mode)</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.near_plane"><code class="name">var <span class="ident">near_plane</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Distance from the camera to the near plane. Defaults to 1</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.ortho"><code class="name">var <span class="ident">ortho</span></code></dt>
+<dd>
+<div class="desc"><p>{bool} True if this is an ortographic camera, false otherwise</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.proj_matrix"><code class="name">var <span class="ident">proj_matrix</span></code></dt>
+<dd>
+<div class="desc"><p>{np.array} Projection matrix. This is only set after get_projection_matrix is called
+once</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.res_x"><code class="name">var <span class="ident">res_x</span></code></dt>
+<dd>
+<div class="desc"><p>{int} Horizontal resolution of the window. This will be the size of the window in
+ortographic view</p></div>
+</dd>
+<dt id="PyXYZ.camera.Camera.res_y"><code class="name">var <span class="ident">res_y</span></code></dt>
+<dd>
+<div class="desc"><p>{int} Vertical resolution of the window. This will be the size of the window in
+ortographic view</p></div>
+</dd>
+</dl>
 <h3>Methods</h3>
 <dl>
-<dt id="PyXYZ.camera.Camera.RayFromNDC"><code class="name flex">
-<span>def <span class="ident">RayFromNDC</span></span>(<span>self, pos)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def RayFromNDC(self, pos):
-
-    vpos = vector3(pos[0], pos[1], self.near_plane)
-    vpos.x =  vpos.x * self.res_x * 0.5
-    vpos.y = -vpos.y * self.res_y * 0.5
-    
-    inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
-    inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
-
-    dir = inv_view_proj_matrix @ vpos.to_np4(1)
-    dir = vector3.from_np(dir).normalized()
-
-    return self.position + dir * self.near_plane, dir</code></pre>
-</details>
-</dd>
 <dt id="PyXYZ.camera.Camera.get_camera_matrix"><code class="name flex">
 <span>def <span class="ident">get_camera_matrix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the view matrix of this camera. This is basically the same as a PRS matrix
+without scalling, and with the position and rotation negated.</p>
+<h2 id="returns">Returns</h2>
+<p>np.array - View matrix of this camera</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_camera_matrix(self):
-    trans = np.identity(4)
-    trans[3,0] = -self.position.x
-    trans[3,1] = -self.position.y
-    trans[3,2] = -self.position.z    
+    &#34;&#34;&#34;Retrieves the view matrix of this camera. This is basically the same as a PRS matrix
+    without scalling, and with the position and rotation negated.
 
-    qrot  = as_rotation_matrix(self.rotation.inverse())
+    Returns:
+        np.array - View matrix of this camera
+    &#34;&#34;&#34;
+    trans = np.identity(4)
+    trans[3, 0] = -self.position.x
+    trans[3, 1] = -self.position.y
+    trans[3, 2] = -self.position.z
+
+    qrot = as_rotation_matrix(self.rotation.inverse())
     rotation_matrix = np.identity(4)
     rotation_matrix[0][0] = qrot[0][0]
     rotation_matrix[0][1] = qrot[0][1]
@@ -235,7 +373,7 @@ class Camera(Object3d):
     rotation_matrix[2][0] = qrot[2][0]
     rotation_matrix[2][1] = qrot[2][1]
     rotation_matrix[2][2] = qrot[2][2]
-    rotation_matrix[3,3] = 1
+    rotation_matrix[3][3] = 1
 
     return trans @ rotation_matrix</code></pre>
 </details>
@@ -244,29 +382,92 @@ class Camera(Object3d):
 <span>def <span class="ident">get_projection_matrix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the projection matrix of this camera.
+This function sets up the proj_matrix attribute as well.</p>
+<h2 id="returns">Returns</h2>
+<p>np.array - Projection matrix of this camera</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_projection_matrix(self):
+    &#34;&#34;&#34;Retrieves the projection matrix of this camera.
+    This function sets up the proj_matrix attribute as well.
+
+    Returns:
+        np.array - Projection matrix of this camera
+    &#34;&#34;&#34;
     self.proj_matrix = np.zeros((4, 4))
-    if (self.ortho):
-        self.proj_matrix[0,0] = self.res_x * 0.5
-        self.proj_matrix[1,1] = self.res_y * 0.5
-        self.proj_matrix[3,0] = 0
-        self.proj_matrix[3,1] = 0
-        self.proj_matrix[3,3] = 1
+    if self.ortho:
+        self.proj_matrix[0, 0] = self.res_x * 0.5
+        self.proj_matrix[1, 1] = self.res_y * 0.5
+        self.proj_matrix[3, 0] = 0
+        self.proj_matrix[3, 1] = 0
+        self.proj_matrix[3, 3] = 1
     else:
-        t = math.tan(self.fov)
+        t = math.tan(self.fov * 0.5)
         a = self.res_y / self.res_x
-        self.proj_matrix[0,0] = 0.5 * self.res_x / t
-        self.proj_matrix[1,1] = 0.5 * self.res_y / (a * t)
-        self.proj_matrix[2,3] = 1
-        self.proj_matrix[2,2] = self.far_plane / (self.far_plane - self.near_plane)
-        self.proj_matrix[3,2] = self.proj_matrix[2,2] * self.near_plane
+        self.proj_matrix[0, 0] = 0.5 * self.res_x / t
+        self.proj_matrix[1, 1] = 0.5 * self.res_y / (a * t)
+        self.proj_matrix[2, 3] = 1
+        self.proj_matrix[2, 2] = self.far_plane / (self.far_plane - self.near_plane)
+        self.proj_matrix[3, 2] = self.proj_matrix[2, 2] * self.near_plane
 
     return self.proj_matrix</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.camera.Camera.ray_from_ndc"><code class="name flex">
+<span>def <span class="ident">ray_from_ndc</span></span>(<span>self, pos)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Retrieves a ray (origin, direction) corresponding to the given position on screen.
+This function takes the coordinates as NDC (normalized device coordinates), in which the
+lower-left corner of the screen corresponds to (-1,-1) and the upper-right corresponds to
+(1,1).
+For example, to convert mouse coordinates to NDC, you could do something like:</p>
+<pre><code class="python">&gt;&gt;&gt; mouse_pos = pygame.mouse.get_pos()
+&gt;&gt;&gt; mouse_pos = ((mouse_pos[0] / res_x) * 2 - 1, (mouse_pos[1] / res_y) * 2 - 1)
+&gt;&gt;&gt; origin, dir = camera.RayFromNDC(mouse_pos)
+</code></pre>
+<h2 id="arguments">Arguments</h2>
+<p>pos {2-tuple} &ndash; Screen position in NDC (normalized device coordinates)</p>
+<h2 id="returns">Returns</h2>
+<p>vector3, vector3 - Origin and direction of the ray corresponding to that screen
+positions</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def ray_from_ndc(self, pos):
+    &#34;&#34;&#34;Retrieves a ray (origin, direction) corresponding to the given position on screen.
+    This function takes the coordinates as NDC (normalized device coordinates), in which the
+    lower-left corner of the screen corresponds to (-1,-1) and the upper-right corresponds to
+    (1,1).
+    For example, to convert mouse coordinates to NDC, you could do something like:
+
+    &gt;&gt;&gt; mouse_pos = pygame.mouse.get_pos()
+    &gt;&gt;&gt; mouse_pos = ((mouse_pos[0] / res_x) * 2 - 1, (mouse_pos[1] / res_y) * 2 - 1)
+    &gt;&gt;&gt; origin, dir = camera.RayFromNDC(mouse_pos)
+
+    Arguments:
+        pos {2-tuple} -- Screen position in NDC (normalized device coordinates)
+
+    Returns:
+        vector3, vector3 - Origin and direction of the ray corresponding to that screen
+        positions
+    &#34;&#34;&#34;
+
+    vpos = vector3(pos[0], pos[1], self.near_plane)
+    vpos.x = vpos.x * self.res_x * 0.5
+    vpos.y = -vpos.y * self.res_y * 0.5
+
+    inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
+    inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
+
+    direction = inv_view_proj_matrix @ vpos.to_np4(1)
+    direction = vector3.from_np(direction).normalized()
+
+    return self.position + direction * self.near_plane, direction</code></pre>
 </details>
 </dd>
 </dl>
@@ -290,9 +491,16 @@ class Camera(Object3d):
 <li>
 <h4><code><a title="PyXYZ.camera.Camera" href="#PyXYZ.camera.Camera">Camera</a></code></h4>
 <ul class="">
-<li><code><a title="PyXYZ.camera.Camera.RayFromNDC" href="#PyXYZ.camera.Camera.RayFromNDC">RayFromNDC</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.far_plane" href="#PyXYZ.camera.Camera.far_plane">far_plane</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.fov" href="#PyXYZ.camera.Camera.fov">fov</a></code></li>
 <li><code><a title="PyXYZ.camera.Camera.get_camera_matrix" href="#PyXYZ.camera.Camera.get_camera_matrix">get_camera_matrix</a></code></li>
 <li><code><a title="PyXYZ.camera.Camera.get_projection_matrix" href="#PyXYZ.camera.Camera.get_projection_matrix">get_projection_matrix</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.near_plane" href="#PyXYZ.camera.Camera.near_plane">near_plane</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.ortho" href="#PyXYZ.camera.Camera.ortho">ortho</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.proj_matrix" href="#PyXYZ.camera.Camera.proj_matrix">proj_matrix</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.ray_from_ndc" href="#PyXYZ.camera.Camera.ray_from_ndc">ray_from_ndc</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.res_x" href="#PyXYZ.camera.Camera.res_x">res_x</a></code></li>
+<li><code><a title="PyXYZ.camera.Camera.res_y" href="#PyXYZ.camera.Camera.res_y">res_y</a></code></li>
 </ul>
 </li>
 </ul>

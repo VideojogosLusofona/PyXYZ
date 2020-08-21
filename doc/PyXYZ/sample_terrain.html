@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>PyXYZ.sample_terrain API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Terrain sample application" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,47 +22,55 @@
 <h1 class="title">Module <code>PyXYZ.sample_terrain</code></h1>
 </header>
 <section id="section-intro">
+<p>Terrain sample application</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Import pygame into our program
+<pre><code class="python">&#34;&#34;&#34;Terrain sample application&#34;&#34;&#34;
+import time
+import math
 import pygame
 import pygame.freetype
-import time
 
-from scene import *
-from object3d import *
-from mesh import *
-from material import *
-from color import *
-from perlin import *
+from quaternion import from_rotation_vector
+from scene import Scene
+from object3d import Object3d
+from camera import Camera
+from mesh import Mesh
+from material import Material
+from color import color
+from vector3 import vector3, dot_product, cross_product
+from perlin import noise2d
 
-# Computes the height of the terrain at the given x,y point
 def sample_height(x, y):
-    # 2 octave noise, with a given scale
+    &#34;&#34;&#34;Computes the height of the terrain at the given x,y point, using
+    2 octave 2d Perlin noise noise, with a given scale&#34;&#34;&#34;
     scale_noise = 1.25
-    n = 0.5 * noise2d(x * scale_noise, y * scale_noise) + 0.25 * noise2d(x * scale_noise * 2, y * scale_noise * 2)
+    n = 0.5 * noise2d(x * scale_noise, y * scale_noise)
+    n += 0.25 * noise2d(x * scale_noise * 2, y * scale_noise * 2)
 
     return n
 
-# Clamps a point to the given water depth, returning True if the point was at or below water
 def clamp_to_water(p, water_depth):
-    if (p. y &lt;= water_depth):
+    &#34;&#34;&#34;Clamps a height to be above water level as defined in the given parameter.
+    If the value gets clamped, it returns True, otherwise it returns False&#34;&#34;&#34;
+    if p. y &lt;= water_depth:
         p. y = water_depth
         return True
 
     return False
 
-# Creates a terrain, composed of different meshes (one per each type of material)
-# It support snow, water, grassland and cliffsize, based on hard-coded parameters
 def create_terrain():
+    &#34;&#34;&#34;Creates a terrain, composed of different meshes (one per each type of material)
+    It support snow, water, grassland and cliffsize, based on hard-coded parameters&#34;&#34;&#34;
+
     # Size of the terrain
     size_x = 4
     size_z = 4
     # Number of divisions of the terrain. Vertex count scales with the square of this
     div = 40
-    # Paramters for water and snow height/depth    
+    # Paramters for water and snow height/depth
     water_depth = -0.1
     snow_height = 0.15
 
@@ -72,6 +80,7 @@ def create_terrain():
     # For centering the terrain on the object center
     origin = vector3(-size_x * 0.5, 0, -size_z * 0.5)
 
+    # Create the meshes for each type of terrain
     grass_mesh = Mesh(&#34;Terrain_Grass&#34;)
     snow_mesh = Mesh(&#34;Terrain_Snow&#34;)
     cliff_mesh = Mesh(&#34;Terrain_Cliff&#34;)
@@ -89,43 +98,51 @@ def create_terrain():
             p3.y = sample_height(p3.x, p3.z)
             p4.y = sample_height(p4.x, p4.z)
 
+            # Check if any of the points is underwater
             water = clamp_to_water(p1, water_depth)
             water |= clamp_to_water(p2, water_depth)
             water |= clamp_to_water(p3, water_depth)
             water |= clamp_to_water(p4, water_depth)
 
+            # Create the polygons
             poly = []
             poly.append(p1)
             poly.append(p2)
             poly.append(p3)
             poly.append(p4)
 
-            if (water):
+            if water:
+                # Polygon was under water, add it to that mesh
                 water_mesh.polygons.append(poly)
             else:
                 # Check for snow height
                 avg_y = (p1.y + p2.y + p3.y + p4.y) * 0.25
-                if (avg_y &gt; snow_height):
+                if avg_y &gt; snow_height:
+                    # The polygon was above a certain point
                     snow_mesh.polygons.append(poly)
                 else:
-                    # Check for cliff face
+                    # Check for cliff face, check the normal
                     normal = cross_product((p3 - p1).normalized(), (p2 - p1).normalized())
-                    if (dot_product(normal, vector3(0,1,0)) &lt; 0.5):
+                    if dot_product(normal, vector3(0, 1, 0)) &lt; 0.5:
                         cliff_mesh.polygons.append(poly)
                     else:
                         grass_mesh.polygons.append(poly)
 
     # Create materials for the terrain
-    grass_material = Material(color(0.1,0.6,0.1,1), &#34;GrassMaterial&#34;)
-    snow_material = Material(color(0.8,0.8,0.8,1), &#34;SnowMaterial&#34;)
-    cliff_material = Material(color(0.4,0.4,0.4,1), &#34;CliffMaterial&#34;)
-    water_material = Material(color(0,0.5,0.7,1), &#34;WaterMaterial&#34;)
+    grass_material = Material(color(0.1, 0.6, 0.1, 1), &#34;GrassMaterial&#34;)
+    snow_material = Material(color(0.8, 0.8, 0.8, 1), &#34;SnowMaterial&#34;)
+    cliff_material = Material(color(0.4, 0.4, 0.4, 1), &#34;CliffMaterial&#34;)
+    water_material = Material(color(0, 0.5, 0.7, 1), &#34;WaterMaterial&#34;)
 
     # Return meshes and materials
-    return [ grass_mesh, snow_mesh, cliff_mesh, water_mesh ], [ grass_material, snow_material, cliff_material, water_material ]
+    meshes = [grass_mesh, snow_mesh, cliff_mesh, water_mesh]
+    materials = [grass_material, snow_material, cliff_material, water_material]
+
+    return meshes, materials
 
 # Define a main function, just to keep things nice and tidy
 def main():
+    &#34;&#34;&#34;Main function, it implements the application loop&#34;&#34;&#34;
     # Initialize pygame, with the default parameters
     pygame.init()
 
@@ -141,8 +158,8 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0,0,4)
-    scene.camera.rotation = from_rotation_vector((vector3(1,0,0) * math.radians(-15)).to_np3())
+    scene.camera.position -= vector3(0, 0, 4)
+    scene.camera.rotation = from_rotation_vector((vector3(1, 0, 0) * math.radians(-15)).to_np3())
 
     # Creates the terrain meshes and materials
     terrain_meshes, terrain_materials = create_terrain()
@@ -153,41 +170,43 @@ def main():
     scene.add_object(master_object)
 
     # Create the terrain objects and place it in a scene, at position (0,0,0)
-    for i in range(0, len(terrain_meshes)):
+    for _, (mesh, material) in enumerate(zip(terrain_meshes, terrain_materials)):
         obj = Object3d(&#34;TerrainObject&#34;)
         obj.scale = vector3(1, 1, 1)
         obj.position = vector3(0, 0, 0)
-        obj.mesh = terrain_meshes[i]
-        obj.material = terrain_materials[i]
+        obj.mesh = mesh
+        obj.material = material
         master_object.add_child(obj)
 
-    # Specify the rotation of the object. It will rotate 15 degrees around the axis given, 
+    # Specify the rotation of the object. It will rotate 15 degrees around the axis given,
     # every second
     angle = 15
-    axis = vector3(0,1,0)
+    axis = vector3(0, 1, 0)
     axis.normalize()
 
     # Timer
     delta_time = 0
     prev_time = time.time()
 
+    # Show mouse cursor
     pygame.mouse.set_visible(True)
+    # Don&#39;t lock the mouse cursor to the game window
     pygame.event.set_grab(False)
 
     # Game loop, runs forever
-    while (True):
+    while True:
         # Process OS events
         for event in pygame.event.get():
             # Checks if the user closed the window
-            if (event.type == pygame.QUIT):
+            if event.type == pygame.QUIT:
                 # Exits the application immediately
                 return
-            elif (event.type == pygame.KEYDOWN):
-                if (event.key == pygame.K_ESCAPE):
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     return
 
         # Clears the screen with a very dark blue (0, 0, 20)
-        screen.fill((0,0,0))
+        screen.fill((0, 0, 0))
 
         # Rotates the object, considering the time passed (not linked to frame rate)
         q = from_rotation_vector((axis * math.radians(angle) * delta_time).to_np3())
@@ -197,7 +216,7 @@ def main():
         #Mesh.stat_vertex_count = 0
         #Mesh.stat_transform_time = 0
         #Mesh.stat_render_time = 0
-        
+
         scene.render(screen)
 
         #Writes the benchmarks results
@@ -230,13 +249,16 @@ main()</code></pre>
 <span>def <span class="ident">clamp_to_water</span></span>(<span>p, water_depth)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Clamps a height to be above water level as defined in the given parameter.
+If the value gets clamped, it returns True, otherwise it returns False</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def clamp_to_water(p, water_depth):
-    if (p. y &lt;= water_depth):
+    &#34;&#34;&#34;Clamps a height to be above water level as defined in the given parameter.
+    If the value gets clamped, it returns True, otherwise it returns False&#34;&#34;&#34;
+    if p. y &lt;= water_depth:
         p. y = water_depth
         return True
 
@@ -247,18 +269,22 @@ main()</code></pre>
 <span>def <span class="ident">create_terrain</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a terrain, composed of different meshes (one per each type of material)
+It support snow, water, grassland and cliffsize, based on hard-coded parameters</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def create_terrain():
+    &#34;&#34;&#34;Creates a terrain, composed of different meshes (one per each type of material)
+    It support snow, water, grassland and cliffsize, based on hard-coded parameters&#34;&#34;&#34;
+
     # Size of the terrain
     size_x = 4
     size_z = 4
     # Number of divisions of the terrain. Vertex count scales with the square of this
     div = 40
-    # Paramters for water and snow height/depth    
+    # Paramters for water and snow height/depth
     water_depth = -0.1
     snow_height = 0.15
 
@@ -268,6 +294,7 @@ main()</code></pre>
     # For centering the terrain on the object center
     origin = vector3(-size_x * 0.5, 0, -size_z * 0.5)
 
+    # Create the meshes for each type of terrain
     grass_mesh = Mesh(&#34;Terrain_Grass&#34;)
     snow_mesh = Mesh(&#34;Terrain_Snow&#34;)
     cliff_mesh = Mesh(&#34;Terrain_Cliff&#34;)
@@ -285,52 +312,60 @@ main()</code></pre>
             p3.y = sample_height(p3.x, p3.z)
             p4.y = sample_height(p4.x, p4.z)
 
+            # Check if any of the points is underwater
             water = clamp_to_water(p1, water_depth)
             water |= clamp_to_water(p2, water_depth)
             water |= clamp_to_water(p3, water_depth)
             water |= clamp_to_water(p4, water_depth)
 
+            # Create the polygons
             poly = []
             poly.append(p1)
             poly.append(p2)
             poly.append(p3)
             poly.append(p4)
 
-            if (water):
+            if water:
+                # Polygon was under water, add it to that mesh
                 water_mesh.polygons.append(poly)
             else:
                 # Check for snow height
                 avg_y = (p1.y + p2.y + p3.y + p4.y) * 0.25
-                if (avg_y &gt; snow_height):
+                if avg_y &gt; snow_height:
+                    # The polygon was above a certain point
                     snow_mesh.polygons.append(poly)
                 else:
-                    # Check for cliff face
+                    # Check for cliff face, check the normal
                     normal = cross_product((p3 - p1).normalized(), (p2 - p1).normalized())
-                    if (dot_product(normal, vector3(0,1,0)) &lt; 0.5):
+                    if dot_product(normal, vector3(0, 1, 0)) &lt; 0.5:
                         cliff_mesh.polygons.append(poly)
                     else:
                         grass_mesh.polygons.append(poly)
 
     # Create materials for the terrain
-    grass_material = Material(color(0.1,0.6,0.1,1), &#34;GrassMaterial&#34;)
-    snow_material = Material(color(0.8,0.8,0.8,1), &#34;SnowMaterial&#34;)
-    cliff_material = Material(color(0.4,0.4,0.4,1), &#34;CliffMaterial&#34;)
-    water_material = Material(color(0,0.5,0.7,1), &#34;WaterMaterial&#34;)
+    grass_material = Material(color(0.1, 0.6, 0.1, 1), &#34;GrassMaterial&#34;)
+    snow_material = Material(color(0.8, 0.8, 0.8, 1), &#34;SnowMaterial&#34;)
+    cliff_material = Material(color(0.4, 0.4, 0.4, 1), &#34;CliffMaterial&#34;)
+    water_material = Material(color(0, 0.5, 0.7, 1), &#34;WaterMaterial&#34;)
 
     # Return meshes and materials
-    return [ grass_mesh, snow_mesh, cliff_mesh, water_mesh ], [ grass_material, snow_material, cliff_material, water_material ]</code></pre>
+    meshes = [grass_mesh, snow_mesh, cliff_mesh, water_mesh]
+    materials = [grass_material, snow_material, cliff_material, water_material]
+
+    return meshes, materials</code></pre>
 </details>
 </dd>
 <dt id="PyXYZ.sample_terrain.main"><code class="name flex">
 <span>def <span class="ident">main</span></span>(<span>)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Main function, it implements the application loop</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def main():
+    &#34;&#34;&#34;Main function, it implements the application loop&#34;&#34;&#34;
     # Initialize pygame, with the default parameters
     pygame.init()
 
@@ -346,8 +381,8 @@ main()</code></pre>
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0,0,4)
-    scene.camera.rotation = from_rotation_vector((vector3(1,0,0) * math.radians(-15)).to_np3())
+    scene.camera.position -= vector3(0, 0, 4)
+    scene.camera.rotation = from_rotation_vector((vector3(1, 0, 0) * math.radians(-15)).to_np3())
 
     # Creates the terrain meshes and materials
     terrain_meshes, terrain_materials = create_terrain()
@@ -358,41 +393,43 @@ main()</code></pre>
     scene.add_object(master_object)
 
     # Create the terrain objects and place it in a scene, at position (0,0,0)
-    for i in range(0, len(terrain_meshes)):
+    for _, (mesh, material) in enumerate(zip(terrain_meshes, terrain_materials)):
         obj = Object3d(&#34;TerrainObject&#34;)
         obj.scale = vector3(1, 1, 1)
         obj.position = vector3(0, 0, 0)
-        obj.mesh = terrain_meshes[i]
-        obj.material = terrain_materials[i]
+        obj.mesh = mesh
+        obj.material = material
         master_object.add_child(obj)
 
-    # Specify the rotation of the object. It will rotate 15 degrees around the axis given, 
+    # Specify the rotation of the object. It will rotate 15 degrees around the axis given,
     # every second
     angle = 15
-    axis = vector3(0,1,0)
+    axis = vector3(0, 1, 0)
     axis.normalize()
 
     # Timer
     delta_time = 0
     prev_time = time.time()
 
+    # Show mouse cursor
     pygame.mouse.set_visible(True)
+    # Don&#39;t lock the mouse cursor to the game window
     pygame.event.set_grab(False)
 
     # Game loop, runs forever
-    while (True):
+    while True:
         # Process OS events
         for event in pygame.event.get():
             # Checks if the user closed the window
-            if (event.type == pygame.QUIT):
+            if event.type == pygame.QUIT:
                 # Exits the application immediately
                 return
-            elif (event.type == pygame.KEYDOWN):
-                if (event.key == pygame.K_ESCAPE):
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
                     return
 
         # Clears the screen with a very dark blue (0, 0, 20)
-        screen.fill((0,0,0))
+        screen.fill((0, 0, 0))
 
         # Rotates the object, considering the time passed (not linked to frame rate)
         q = from_rotation_vector((axis * math.radians(angle) * delta_time).to_np3())
@@ -402,7 +439,7 @@ main()</code></pre>
         #Mesh.stat_vertex_count = 0
         #Mesh.stat_transform_time = 0
         #Mesh.stat_render_time = 0
-        
+
         scene.render(screen)
 
         #Writes the benchmarks results
@@ -423,15 +460,18 @@ main()</code></pre>
 <span>def <span class="ident">sample_height</span></span>(<span>x, y)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Computes the height of the terrain at the given x,y point, using
+2 octave 2d Perlin noise noise, with a given scale</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def sample_height(x, y):
-    # 2 octave noise, with a given scale
+    &#34;&#34;&#34;Computes the height of the terrain at the given x,y point, using
+    2 octave 2d Perlin noise noise, with a given scale&#34;&#34;&#34;
     scale_noise = 1.25
-    n = 0.5 * noise2d(x * scale_noise, y * scale_noise) + 0.25 * noise2d(x * scale_noise * 2, y * scale_noise * 2)
+    n = 0.5 * noise2d(x * scale_noise, y * scale_noise)
+    n += 0.25 * noise2d(x * scale_noise * 2, y * scale_noise * 2)
 
     return n</code></pre>
 </details>

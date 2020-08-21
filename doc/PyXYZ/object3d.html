@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>PyXYZ.object3d API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="3d Object class" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,61 +22,168 @@
 <h1 class="title">Module <code>PyXYZ.object3d</code></h1>
 </header>
 <section id="section-intro">
+<p>3d Object class</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import numpy as np
-from vector3 import *
-from quaternion import *
+<pre><code class="python">&#34;&#34;&#34;3d Object class&#34;&#34;&#34;
+
+import numpy as np
+from quaternion import quaternion, as_rotation_matrix
+from vector3 import vector3
 
 class Object3d:
+    &#34;&#34;&#34;3d object class.
+    This is the base class of all objects added to the scene graph.
+    &#34;&#34;&#34;
     def __init__(self, name):
+        &#34;&#34;&#34;
+        Arguments:
+
+            name {str} -- Name of the object
+        &#34;&#34;&#34;
         self.name = name
+        &#34;&#34;&#34; {str} Name of the object&#34;&#34;&#34;
         self.position = vector3()
-        self.rotation = quaternion(1,0,0,0)
-        self.scale = vector3(1,1,1)
+        &#34;&#34;&#34; {vector3} Local position of the object (relative to parent)&#34;&#34;&#34;
+        self.rotation = quaternion(1, 0, 0, 0)
+        &#34;&#34;&#34; {quaternion} Local rotation of the object {relative to parent)&#34;&#34;&#34;
+        self.scale = vector3(1, 1, 1)
+        &#34;&#34;&#34; {vector3} Local scale of the object (relative to parent)&#34;&#34;&#34;
         self.mesh = None
+        &#34;&#34;&#34; {Mesh} Mesh to be rendered in this object&#34;&#34;&#34;
         self.material = None
+        &#34;&#34;&#34; {Material} Material to be used rendering this object&#34;&#34;&#34;
         self.children = []
+        &#34;&#34;&#34; {List[Object3d]} Children objects of this object&#34;&#34;&#34;
 
     def get_matrix(self):
+        &#34;&#34;&#34;
+        Retrieves the local transformation matrix of this object
+
+        Returns:
+
+            {np.array} -- Local transformation matrix
+        &#34;&#34;&#34;
         return Object3d.get_prs_matrix(self.position, self.rotation, self.scale)
 
     def render(self, screen, clip_matrix):
+        &#34;&#34;&#34;
+        Renders this object with the given clip_matrix.
+
+        Arguments:
+
+            screen {pygame.Surface} -- Pygame surface in which this object will be rendered
+
+            clip_matrix {np.array} -- Parent transformation matrix (including view and projection
+            matrix)
+        &#34;&#34;&#34;
+
+        # Retrieve the local transformation matrix
         world_matrix = self.get_matrix()
-        
+
+        # Multiply the local transformation with the clip matrix (transformation compositing)
         mesh_matrix = world_matrix @ clip_matrix
 
-        if ((self.material != None) and (self.mesh)):
+        # If there&#39;s a mesh and a material
+        if ((self.material is not None) and (self.mesh is not None)):
             self.mesh.render(screen, mesh_matrix, self.material)
 
+        # Traverse the children of this object, rendering them
         for child in self.children:
             child.render(screen, mesh_matrix)
 
     def add_child(self, obj):
+        &#34;&#34;&#34;
+        Adds a child object to the hierarchy of this one
+
+        Arguments:
+
+            obj {Object3d} -- Object to add to the hierarchy
+        &#34;&#34;&#34;
         self.children.append(obj)
 
+    def remove_child(self, obj):
+        &#34;&#34;&#34;
+        Removes a child object from the hierarchy of this one. If the object isn&#39;t a child of
+        this one, nothing happens
+
+        Arguments:
+
+            obj {Object3d} -- Object to remove from the hierarchy
+        &#34;&#34;&#34;
+        if obj in self.children:
+            self.children.remove(obj)
+
     def get_position(self):
-        return vector3.from_np(vector3(0,0,0).to_np4(1) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local position of this object. You can use self.position instead, this
+        method actually computes the transfomation matrix and multiplies the 4d vector (0,0,0,1)
+        by it. Results should be very similar.
+
+        Returns:
+
+            {vector3} - Local position of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 0, 0).to_np4(1) @ self.get_matrix())
 
     def forward(self):
-        return vector3.from_np(vector3(0,0,1).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local forward vector of this object. The forward vector is defined as
+        being the z-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local forward vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 0, 1).to_np4(0) @ self.get_matrix())
 
     def up(self):
-        return vector3.from_np(vector3(0,1,0).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local up vector of this object. The up vector is defined as being
+        the y-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local up vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 1, 0).to_np4(0) @ self.get_matrix())
 
     def right(self):
-        return vector3.from_np(vector3(1,0,0).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local right vector of this object. The right vector is defined as being
+        the x-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local right vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(1, 0, 0).to_np4(0) @ self.get_matrix())
 
     @staticmethod
     def get_prs_matrix(position, rotation, scale):
-        trans = np.identity(4)
-        trans[3,0] = position.x
-        trans[3,1] = position.y
-        trans[3,2] = position.z    
+        &#34;&#34;&#34;
+        Creates a PRS matrix from the given position, rotation and scale
 
-        qrot  = as_rotation_matrix(rotation)
+        Arguments:
+
+            position {vector3} - Position
+
+            rotation {quaternion} - Rotation
+
+            scale {vector3} - Scale
+
+        Returns:
+
+            {np.array} - PRS matrix
+        &#34;&#34;&#34;
+        trans = np.identity(4)
+        trans[3][0] = position.x
+        trans[3][1] = position.y
+        trans[3][2] = position.z
+
+        qrot = as_rotation_matrix(rotation)
         rotation_matrix = np.identity(4)
         rotation_matrix[0][0] = qrot[0][0]
         rotation_matrix[0][1] = qrot[0][1]
@@ -87,12 +194,12 @@ class Object3d:
         rotation_matrix[2][0] = qrot[2][0]
         rotation_matrix[2][1] = qrot[2][1]
         rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3,3] = 1
+        rotation_matrix[3][3] = 1
 
         scale_matrix = np.identity(4)
-        scale_matrix[0,0] = scale.x    
-        scale_matrix[1,1] = scale.y
-        scale_matrix[2,2] = scale.z  
+        scale_matrix[0][0] = scale.x
+        scale_matrix[1][1] = scale.y
+        scale_matrix[2][2] = scale.z
 
         return scale_matrix @ rotation_matrix @ trans</code></pre>
 </details>
@@ -111,58 +218,165 @@ class Object3d:
 <span>(</span><span>name)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>3d object class.
+This is the base class of all objects added to the scene graph.</p>
+<h2 id="arguments">Arguments</h2>
+<p>name {str} &ndash; Name of the object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Object3d:
+    &#34;&#34;&#34;3d object class.
+    This is the base class of all objects added to the scene graph.
+    &#34;&#34;&#34;
     def __init__(self, name):
+        &#34;&#34;&#34;
+        Arguments:
+
+            name {str} -- Name of the object
+        &#34;&#34;&#34;
         self.name = name
+        &#34;&#34;&#34; {str} Name of the object&#34;&#34;&#34;
         self.position = vector3()
-        self.rotation = quaternion(1,0,0,0)
-        self.scale = vector3(1,1,1)
+        &#34;&#34;&#34; {vector3} Local position of the object (relative to parent)&#34;&#34;&#34;
+        self.rotation = quaternion(1, 0, 0, 0)
+        &#34;&#34;&#34; {quaternion} Local rotation of the object {relative to parent)&#34;&#34;&#34;
+        self.scale = vector3(1, 1, 1)
+        &#34;&#34;&#34; {vector3} Local scale of the object (relative to parent)&#34;&#34;&#34;
         self.mesh = None
+        &#34;&#34;&#34; {Mesh} Mesh to be rendered in this object&#34;&#34;&#34;
         self.material = None
+        &#34;&#34;&#34; {Material} Material to be used rendering this object&#34;&#34;&#34;
         self.children = []
+        &#34;&#34;&#34; {List[Object3d]} Children objects of this object&#34;&#34;&#34;
 
     def get_matrix(self):
+        &#34;&#34;&#34;
+        Retrieves the local transformation matrix of this object
+
+        Returns:
+
+            {np.array} -- Local transformation matrix
+        &#34;&#34;&#34;
         return Object3d.get_prs_matrix(self.position, self.rotation, self.scale)
 
     def render(self, screen, clip_matrix):
+        &#34;&#34;&#34;
+        Renders this object with the given clip_matrix.
+
+        Arguments:
+
+            screen {pygame.Surface} -- Pygame surface in which this object will be rendered
+
+            clip_matrix {np.array} -- Parent transformation matrix (including view and projection
+            matrix)
+        &#34;&#34;&#34;
+
+        # Retrieve the local transformation matrix
         world_matrix = self.get_matrix()
-        
+
+        # Multiply the local transformation with the clip matrix (transformation compositing)
         mesh_matrix = world_matrix @ clip_matrix
 
-        if ((self.material != None) and (self.mesh)):
+        # If there&#39;s a mesh and a material
+        if ((self.material is not None) and (self.mesh is not None)):
             self.mesh.render(screen, mesh_matrix, self.material)
 
+        # Traverse the children of this object, rendering them
         for child in self.children:
             child.render(screen, mesh_matrix)
 
     def add_child(self, obj):
+        &#34;&#34;&#34;
+        Adds a child object to the hierarchy of this one
+
+        Arguments:
+
+            obj {Object3d} -- Object to add to the hierarchy
+        &#34;&#34;&#34;
         self.children.append(obj)
 
+    def remove_child(self, obj):
+        &#34;&#34;&#34;
+        Removes a child object from the hierarchy of this one. If the object isn&#39;t a child of
+        this one, nothing happens
+
+        Arguments:
+
+            obj {Object3d} -- Object to remove from the hierarchy
+        &#34;&#34;&#34;
+        if obj in self.children:
+            self.children.remove(obj)
+
     def get_position(self):
-        return vector3.from_np(vector3(0,0,0).to_np4(1) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local position of this object. You can use self.position instead, this
+        method actually computes the transfomation matrix and multiplies the 4d vector (0,0,0,1)
+        by it. Results should be very similar.
+
+        Returns:
+
+            {vector3} - Local position of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 0, 0).to_np4(1) @ self.get_matrix())
 
     def forward(self):
-        return vector3.from_np(vector3(0,0,1).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local forward vector of this object. The forward vector is defined as
+        being the z-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local forward vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 0, 1).to_np4(0) @ self.get_matrix())
 
     def up(self):
-        return vector3.from_np(vector3(0,1,0).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local up vector of this object. The up vector is defined as being
+        the y-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local up vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(0, 1, 0).to_np4(0) @ self.get_matrix())
 
     def right(self):
-        return vector3.from_np(vector3(1,0,0).to_np4(0) @ self.get_matrix())
+        &#34;&#34;&#34;
+        Retrieves the local right vector of this object. The right vector is defined as being
+        the x-positive vector multiplied with the local transformation matrix
+
+        Returns:
+
+            {vector3} - Local right vector of the object
+        &#34;&#34;&#34;
+        return vector3.from_np(vector3(1, 0, 0).to_np4(0) @ self.get_matrix())
 
     @staticmethod
     def get_prs_matrix(position, rotation, scale):
-        trans = np.identity(4)
-        trans[3,0] = position.x
-        trans[3,1] = position.y
-        trans[3,2] = position.z    
+        &#34;&#34;&#34;
+        Creates a PRS matrix from the given position, rotation and scale
 
-        qrot  = as_rotation_matrix(rotation)
+        Arguments:
+
+            position {vector3} - Position
+
+            rotation {quaternion} - Rotation
+
+            scale {vector3} - Scale
+
+        Returns:
+
+            {np.array} - PRS matrix
+        &#34;&#34;&#34;
+        trans = np.identity(4)
+        trans[3][0] = position.x
+        trans[3][1] = position.y
+        trans[3][2] = position.z
+
+        qrot = as_rotation_matrix(rotation)
         rotation_matrix = np.identity(4)
         rotation_matrix[0][0] = qrot[0][0]
         rotation_matrix[0][1] = qrot[0][1]
@@ -173,12 +387,12 @@ class Object3d:
         rotation_matrix[2][0] = qrot[2][0]
         rotation_matrix[2][1] = qrot[2][1]
         rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3,3] = 1
+        rotation_matrix[3][3] = 1
 
         scale_matrix = np.identity(4)
-        scale_matrix[0,0] = scale.x    
-        scale_matrix[1,1] = scale.y
-        scale_matrix[2,2] = scale.z  
+        scale_matrix[0][0] = scale.x
+        scale_matrix[1][1] = scale.y
+        scale_matrix[2][2] = scale.z
 
         return scale_matrix @ rotation_matrix @ trans</code></pre>
 </details>
@@ -188,19 +402,40 @@ class Object3d:
 <span>def <span class="ident">get_prs_matrix</span></span>(<span>position, rotation, scale)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Creates a PRS matrix from the given position, rotation and scale</p>
+<h2 id="arguments">Arguments</h2>
+<p>position {vector3} - Position</p>
+<p>rotation {quaternion} - Rotation</p>
+<p>scale {vector3} - Scale</p>
+<h2 id="returns">Returns</h2>
+<p>{np.array} - PRS matrix</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def get_prs_matrix(position, rotation, scale):
-    trans = np.identity(4)
-    trans[3,0] = position.x
-    trans[3,1] = position.y
-    trans[3,2] = position.z    
+    &#34;&#34;&#34;
+    Creates a PRS matrix from the given position, rotation and scale
 
-    qrot  = as_rotation_matrix(rotation)
+    Arguments:
+
+        position {vector3} - Position
+
+        rotation {quaternion} - Rotation
+
+        scale {vector3} - Scale
+
+    Returns:
+
+        {np.array} - PRS matrix
+    &#34;&#34;&#34;
+    trans = np.identity(4)
+    trans[3][0] = position.x
+    trans[3][1] = position.y
+    trans[3][2] = position.z
+
+    qrot = as_rotation_matrix(rotation)
     rotation_matrix = np.identity(4)
     rotation_matrix[0][0] = qrot[0][0]
     rotation_matrix[0][1] = qrot[0][1]
@@ -211,15 +446,46 @@ def get_prs_matrix(position, rotation, scale):
     rotation_matrix[2][0] = qrot[2][0]
     rotation_matrix[2][1] = qrot[2][1]
     rotation_matrix[2][2] = qrot[2][2]
-    rotation_matrix[3,3] = 1
+    rotation_matrix[3][3] = 1
 
     scale_matrix = np.identity(4)
-    scale_matrix[0,0] = scale.x    
-    scale_matrix[1,1] = scale.y
-    scale_matrix[2,2] = scale.z  
+    scale_matrix[0][0] = scale.x
+    scale_matrix[1][1] = scale.y
+    scale_matrix[2][2] = scale.z
 
     return scale_matrix @ rotation_matrix @ trans</code></pre>
 </details>
+</dd>
+</dl>
+<h3>Instance variables</h3>
+<dl>
+<dt id="PyXYZ.object3d.Object3d.children"><code class="name">var <span class="ident">children</span></code></dt>
+<dd>
+<div class="desc"><p>{List[Object3d]} Children objects of this object</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.material"><code class="name">var <span class="ident">material</span></code></dt>
+<dd>
+<div class="desc"><p>{Material} Material to be used rendering this object</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.mesh"><code class="name">var <span class="ident">mesh</span></code></dt>
+<dd>
+<div class="desc"><p>{Mesh} Mesh to be rendered in this object</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>{str} Name of the object</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.position"><code class="name">var <span class="ident">position</span></code></dt>
+<dd>
+<div class="desc"><p>{vector3} Local position of the object (relative to parent)</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.rotation"><code class="name">var <span class="ident">rotation</span></code></dt>
+<dd>
+<div class="desc"><p>{quaternion} Local rotation of the object {relative to parent)</p></div>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.scale"><code class="name">var <span class="ident">scale</span></code></dt>
+<dd>
+<div class="desc"><p>{vector3} Local scale of the object (relative to parent)</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
@@ -228,12 +494,21 @@ def get_prs_matrix(position, rotation, scale):
 <span>def <span class="ident">add_child</span></span>(<span>self, obj)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Adds a child object to the hierarchy of this one</p>
+<h2 id="arguments">Arguments</h2>
+<p>obj {Object3d} &ndash; Object to add to the hierarchy</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def add_child(self, obj):
+    &#34;&#34;&#34;
+    Adds a child object to the hierarchy of this one
+
+    Arguments:
+
+        obj {Object3d} -- Object to add to the hierarchy
+    &#34;&#34;&#34;
     self.children.append(obj)</code></pre>
 </details>
 </dd>
@@ -241,25 +516,45 @@ def get_prs_matrix(position, rotation, scale):
 <span>def <span class="ident">forward</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the local forward vector of this object. The forward vector is defined as
+being the z-positive vector multiplied with the local transformation matrix</p>
+<h2 id="returns">Returns</h2>
+<p>{vector3} - Local forward vector of the object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def forward(self):
-    return vector3.from_np(vector3(0,0,1).to_np4(0) @ self.get_matrix())</code></pre>
+    &#34;&#34;&#34;
+    Retrieves the local forward vector of this object. The forward vector is defined as
+    being the z-positive vector multiplied with the local transformation matrix
+
+    Returns:
+
+        {vector3} - Local forward vector of the object
+    &#34;&#34;&#34;
+    return vector3.from_np(vector3(0, 0, 1).to_np4(0) @ self.get_matrix())</code></pre>
 </details>
 </dd>
 <dt id="PyXYZ.object3d.Object3d.get_matrix"><code class="name flex">
 <span>def <span class="ident">get_matrix</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the local transformation matrix of this object</p>
+<h2 id="returns">Returns</h2>
+<p>{np.array} &ndash; Local transformation matrix</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_matrix(self):
+    &#34;&#34;&#34;
+    Retrieves the local transformation matrix of this object
+
+    Returns:
+
+        {np.array} -- Local transformation matrix
+    &#34;&#34;&#34;
     return Object3d.get_prs_matrix(self.position, self.rotation, self.scale)</code></pre>
 </details>
 </dd>
@@ -267,32 +562,89 @@ def get_prs_matrix(position, rotation, scale):
 <span>def <span class="ident">get_position</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the local position of this object. You can use self.position instead, this
+method actually computes the transfomation matrix and multiplies the 4d vector (0,0,0,1)
+by it. Results should be very similar.</p>
+<h2 id="returns">Returns</h2>
+<p>{vector3} - Local position of the object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def get_position(self):
-    return vector3.from_np(vector3(0,0,0).to_np4(1) @ self.get_matrix())</code></pre>
+    &#34;&#34;&#34;
+    Retrieves the local position of this object. You can use self.position instead, this
+    method actually computes the transfomation matrix and multiplies the 4d vector (0,0,0,1)
+    by it. Results should be very similar.
+
+    Returns:
+
+        {vector3} - Local position of the object
+    &#34;&#34;&#34;
+    return vector3.from_np(vector3(0, 0, 0).to_np4(1) @ self.get_matrix())</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.object3d.Object3d.remove_child"><code class="name flex">
+<span>def <span class="ident">remove_child</span></span>(<span>self, obj)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Removes a child object from the hierarchy of this one. If the object isn't a child of
+this one, nothing happens</p>
+<h2 id="arguments">Arguments</h2>
+<p>obj {Object3d} &ndash; Object to remove from the hierarchy</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove_child(self, obj):
+    &#34;&#34;&#34;
+    Removes a child object from the hierarchy of this one. If the object isn&#39;t a child of
+    this one, nothing happens
+
+    Arguments:
+
+        obj {Object3d} -- Object to remove from the hierarchy
+    &#34;&#34;&#34;
+    if obj in self.children:
+        self.children.remove(obj)</code></pre>
 </details>
 </dd>
 <dt id="PyXYZ.object3d.Object3d.render"><code class="name flex">
 <span>def <span class="ident">render</span></span>(<span>self, screen, clip_matrix)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Renders this object with the given clip_matrix.</p>
+<h2 id="arguments">Arguments</h2>
+<p>screen {pygame.Surface} &ndash; Pygame surface in which this object will be rendered</p>
+<p>clip_matrix {np.array} &ndash; Parent transformation matrix (including view and projection
+matrix)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def render(self, screen, clip_matrix):
+    &#34;&#34;&#34;
+    Renders this object with the given clip_matrix.
+
+    Arguments:
+
+        screen {pygame.Surface} -- Pygame surface in which this object will be rendered
+
+        clip_matrix {np.array} -- Parent transformation matrix (including view and projection
+        matrix)
+    &#34;&#34;&#34;
+
+    # Retrieve the local transformation matrix
     world_matrix = self.get_matrix()
-    
+
+    # Multiply the local transformation with the clip matrix (transformation compositing)
     mesh_matrix = world_matrix @ clip_matrix
 
-    if ((self.material != None) and (self.mesh)):
+    # If there&#39;s a mesh and a material
+    if ((self.material is not None) and (self.mesh is not None)):
         self.mesh.render(screen, mesh_matrix, self.material)
 
+    # Traverse the children of this object, rendering them
     for child in self.children:
         child.render(screen, mesh_matrix)</code></pre>
 </details>
@@ -301,26 +653,48 @@ def get_prs_matrix(position, rotation, scale):
 <span>def <span class="ident">right</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the local right vector of this object. The right vector is defined as being
+the x-positive vector multiplied with the local transformation matrix</p>
+<h2 id="returns">Returns</h2>
+<p>{vector3} - Local right vector of the object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def right(self):
-    return vector3.from_np(vector3(1,0,0).to_np4(0) @ self.get_matrix())</code></pre>
+    &#34;&#34;&#34;
+    Retrieves the local right vector of this object. The right vector is defined as being
+    the x-positive vector multiplied with the local transformation matrix
+
+    Returns:
+
+        {vector3} - Local right vector of the object
+    &#34;&#34;&#34;
+    return vector3.from_np(vector3(1, 0, 0).to_np4(0) @ self.get_matrix())</code></pre>
 </details>
 </dd>
 <dt id="PyXYZ.object3d.Object3d.up"><code class="name flex">
 <span>def <span class="ident">up</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Retrieves the local up vector of this object. The up vector is defined as being
+the y-positive vector multiplied with the local transformation matrix</p>
+<h2 id="returns">Returns</h2>
+<p>{vector3} - Local up vector of the object</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def up(self):
-    return vector3.from_np(vector3(0,1,0).to_np4(0) @ self.get_matrix())</code></pre>
+    &#34;&#34;&#34;
+    Retrieves the local up vector of this object. The up vector is defined as being
+    the y-positive vector multiplied with the local transformation matrix
+
+    Returns:
+
+        {vector3} - Local up vector of the object
+    &#34;&#34;&#34;
+    return vector3.from_np(vector3(0, 1, 0).to_np4(0) @ self.get_matrix())</code></pre>
 </details>
 </dd>
 </dl>
@@ -345,12 +719,20 @@ def get_prs_matrix(position, rotation, scale):
 <h4><code><a title="PyXYZ.object3d.Object3d" href="#PyXYZ.object3d.Object3d">Object3d</a></code></h4>
 <ul class="two-column">
 <li><code><a title="PyXYZ.object3d.Object3d.add_child" href="#PyXYZ.object3d.Object3d.add_child">add_child</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.children" href="#PyXYZ.object3d.Object3d.children">children</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.forward" href="#PyXYZ.object3d.Object3d.forward">forward</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.get_matrix" href="#PyXYZ.object3d.Object3d.get_matrix">get_matrix</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.get_position" href="#PyXYZ.object3d.Object3d.get_position">get_position</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.get_prs_matrix" href="#PyXYZ.object3d.Object3d.get_prs_matrix">get_prs_matrix</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.material" href="#PyXYZ.object3d.Object3d.material">material</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.mesh" href="#PyXYZ.object3d.Object3d.mesh">mesh</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.name" href="#PyXYZ.object3d.Object3d.name">name</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.position" href="#PyXYZ.object3d.Object3d.position">position</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.remove_child" href="#PyXYZ.object3d.Object3d.remove_child">remove_child</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.render" href="#PyXYZ.object3d.Object3d.render">render</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.right" href="#PyXYZ.object3d.Object3d.right">right</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.rotation" href="#PyXYZ.object3d.Object3d.rotation">rotation</a></code></li>
+<li><code><a title="PyXYZ.object3d.Object3d.scale" href="#PyXYZ.object3d.Object3d.scale">scale</a></code></li>
 <li><code><a title="PyXYZ.object3d.Object3d.up" href="#PyXYZ.object3d.Object3d.up">up</a></code></li>
 </ul>
 </li>

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.4" />
 <title>PyXYZ.perlin API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="Simple 2d Perlin noise implementation, based on https://github.com/karlll/perlin2d.py" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.18.1/styles/github.min.css" crossorigin>
@@ -22,48 +22,50 @@
 <h1 class="title">Module <code>PyXYZ.perlin</code></h1>
 </header>
 <section id="section-intro">
+<p>Simple 2d Perlin noise implementation, based on <a href="https://github.com/karlll/perlin2d.py">https://github.com/karlll/perlin2d.py</a></p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python"># Simple perlin noise implementation, based on https://github.com/karlll/perlin2d.py
-import math, random
+<pre><code class="python">&#34;&#34;&#34;Simple 2d Perlin noise implementation, based on https://github.com/karlll/perlin2d.py&#34;&#34;&#34;
+import math
+import random
 
 W = 255
 H = 255
-gradtable = [ (0,0) for i in range(0,W*H) ]
+gradtable = [(0, 0) for i in range(0, W*H)]
 
 def _precalc_gradtable():
     rnd = random.Random()
-    for i in range(0,H):
+    for i in range(0, H):
         for j in range(0, W):
-            x = float((rnd.randint(1,2*W))-W)/W
-            y = float((rnd.randint(1,2*H))-H)/H
+            x = float((rnd.randint(1, 2*W))-W)/W
+            y = float((rnd.randint(1, 2*H))-H)/H
             s = math.sqrt(x * x + y * y)
-            if s!=0:
+            if s != 0:
                 x = x / s
                 y = y / s
             else:
                 x = 0
                 y = 0
-            gradtable[i*H+j] = (x,y)
+            gradtable[i*H+j] = (x, y)
 
 #calculate dot product for v1 and v2
-def _dot(v1,v2):
-    return ( (v1[0]*v2[0]) + (v1[1]*v2[1]) )
+def _dot(v1, v2):
+    return (v1[0]*v2[0]) + (v1[1]*v2[1])
 
 # get a pseudorandom gradient vector
-def _gradient(x,y):
+def _gradient(x, y):
 
     # normalize!
     return gradtable[y*H+x]
 
 def _s_curve(x):
-    return ( 3*x*x - 2*x*x*x )
+    return 3*x*x - 2*x*x*x
 
-def noise2d(x,y):
+def noise2d(x, y):
     &#34;&#34;&#34;Returns perlin noise corresponding to the given (x,y)
-    
+
     Arguments:
         x {number} - X coordinate
         y {number} - Y coordinate
@@ -82,16 +84,16 @@ def noise2d(x,y):
     i_y0 = int(y0)
     i_y1 = int(y1)
 
-    s = _dot(_gradient(i_x0, i_y0),(x-x0, y-y0))
-    t = _dot(_gradient(i_x1, i_y0),(x-x1, y-y0))
-    u = _dot(_gradient(i_x0, i_y1),(x-x0, y-y1))
-    v = _dot(_gradient(i_x1, i_y1),(x-x1, y-y1))
+    s = _dot(_gradient(i_x0, i_y0), (x-x0, y-y0))
+    t = _dot(_gradient(i_x1, i_y0), (x-x1, y-y0))
+    u = _dot(_gradient(i_x0, i_y1), (x-x0, y-y1))
+    v = _dot(_gradient(i_x1, i_y1), (x-x1, y-y1))
 
-    s_x = _s_curve( x - x0 )
+    s_x = _s_curve(x - x0)
     a = s + s_x*t - s_x*s
     b = u + s_x*v - s_x*u
 
-    s_y = _s_curve( y - y0 )
+    s_y = _s_curve(y - y0)
     z = a + s_y*b - s_y*a
 
     return z
@@ -120,9 +122,9 @@ y {number} - Y coordinate</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def noise2d(x,y):
+<pre><code class="python">def noise2d(x, y):
     &#34;&#34;&#34;Returns perlin noise corresponding to the given (x,y)
-    
+
     Arguments:
         x {number} - X coordinate
         y {number} - Y coordinate
@@ -141,16 +143,16 @@ y {number} - Y coordinate</p>
     i_y0 = int(y0)
     i_y1 = int(y1)
 
-    s = _dot(_gradient(i_x0, i_y0),(x-x0, y-y0))
-    t = _dot(_gradient(i_x1, i_y0),(x-x1, y-y0))
-    u = _dot(_gradient(i_x0, i_y1),(x-x0, y-y1))
-    v = _dot(_gradient(i_x1, i_y1),(x-x1, y-y1))
+    s = _dot(_gradient(i_x0, i_y0), (x-x0, y-y0))
+    t = _dot(_gradient(i_x1, i_y0), (x-x1, y-y0))
+    u = _dot(_gradient(i_x0, i_y1), (x-x0, y-y1))
+    v = _dot(_gradient(i_x1, i_y1), (x-x1, y-y1))
 
-    s_x = _s_curve( x - x0 )
+    s_x = _s_curve(x - x0)
     a = s + s_x*t - s_x*s
     b = u + s_x*v - s_x*u
 
-    s_y = _s_curve( y - y0 )
+    s_y = _s_curve(y - y0)
     z = a + s_y*b - s_y*a
 
     return z</code></pre>
