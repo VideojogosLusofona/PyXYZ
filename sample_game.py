@@ -12,8 +12,8 @@ from object3d import Object3d
 from camera import Camera
 from mesh import Mesh
 from material import Material
-from color import color
-from vector3 import vector3, dot_product, cross_product
+from color import Color
+from vector3 import Vector3, dot_product, cross_product
 from perlin import noise2d
 
 class Missile(Object3d):
@@ -29,24 +29,24 @@ class Missile(Object3d):
     def __init__(self):
         if Missile.missile_mesh is None:
             Missile.missile_mesh = Missile.create_missile_mesh()
-            Missile.missile_material = Material(color(1, 0, 0, 1), "MissileMaterial")
+            Missile.missile_material = Material(Color(1, 0, 0, 1), "MissileMaterial")
 
         super().__init__("Missile")
 
         # Determine the spawn position. There's 33% chance it comes from the right, 33% that it
         # comes from behind the mountains, and 34% chance it comes from the left
-        self.position = vector3(0, random.uniform(0, 3), 12)
+        self.position = Vector3(0, random.uniform(0, 3), 12)
         r = random.uniform(0, 100)
         if r > 66:
             self.position.x = 7
-            self.rotation = from_rotation_vector((vector3(0, 1, 0) * math.radians(90)).to_np3())
+            self.rotation = from_rotation_vector((Vector3(0, 1, 0) * math.radians(90)).to_np3())
         elif r > 33:
             self.position.y = -2
             self.position.x = random.uniform(-4, 4)
-            self.rotation = from_rotation_vector((vector3(1, 0, 0) * math.radians(90)).to_np3())
+            self.rotation = from_rotation_vector((Vector3(1, 0, 0) * math.radians(90)).to_np3())
         else:
             self.position.x = -7
-            self.rotation = from_rotation_vector((vector3(0, 1, 0) * math.radians(-90)).to_np3())
+            self.rotation = from_rotation_vector((Vector3(0, 1, 0) * math.radians(-90)).to_np3())
 
         # Set the mesh and material of the missile
         self.mesh = Missile.missile_mesh
@@ -65,7 +65,7 @@ class Missile(Object3d):
         # Rotate missile towards the player - Figure out where it is pointing and
         # where do we want to point it
         current_dir = self.forward()
-        desired_dir = (vector3(0, 0, 0) - self.position).normalized()
+        desired_dir = (Vector3(0, 0, 0) - self.position).normalized()
         # Find the angle between these two directions
         dp = np.clip(dot_product(current_dir, desired_dir), -1, 1)
         angle = math.acos(dp)
@@ -90,18 +90,18 @@ class Missile(Object3d):
         length = 0.075
         cone = 0.05
         missile_mesh = Mesh.create_cube((radius * 2, radius * 2, length * 2))
-        missile_mesh = Mesh.create_tri(vector3(radius, radius, length),
-                                       vector3(radius, -radius, length),
-                                       vector3(0, 0, length + cone), missile_mesh)
-        missile_mesh = Mesh.create_tri(vector3(radius, -radius, length),
-                                       vector3(-radius, -radius, length),
-                                       vector3(0, 0, length + cone), missile_mesh)
-        missile_mesh = Mesh.create_tri(vector3(-radius, -radius, length),
-                                       vector3(-radius, radius, length),
-                                       vector3(0, 0, length + cone), missile_mesh)
-        missile_mesh = Mesh.create_tri(vector3(-radius, radius, length),
-                                       vector3(radius, radius, length),
-                                       vector3(0, 0, length + cone), missile_mesh)
+        missile_mesh = Mesh.create_tri(Vector3(radius, radius, length),
+                                       Vector3(radius, -radius, length),
+                                       Vector3(0, 0, length + cone), missile_mesh)
+        missile_mesh = Mesh.create_tri(Vector3(radius, -radius, length),
+                                       Vector3(-radius, -radius, length),
+                                       Vector3(0, 0, length + cone), missile_mesh)
+        missile_mesh = Mesh.create_tri(Vector3(-radius, -radius, length),
+                                       Vector3(-radius, radius, length),
+                                       Vector3(0, 0, length + cone), missile_mesh)
+        missile_mesh = Mesh.create_tri(Vector3(-radius, radius, length),
+                                       Vector3(radius, radius, length),
+                                       Vector3(0, 0, length + cone), missile_mesh)
 
         return missile_mesh
 
@@ -117,16 +117,16 @@ class Shot(Object3d):
     def __init__(self):
         if Shot.shot_mesh is None:
             Shot.shot_mesh = Mesh.create_sphere((0.1, 0.1, 0.1), 4, 4)
-            Shot.shot_material = Material(color(1, 1, 0, 1), "ShotMaterial")
+            Shot.shot_material = Material(Color(1, 1, 0, 1), "ShotMaterial")
 
         super().__init__("Shot")
 
         # The position and direction will be overwritten by the code that spawns the shot
-        self.position = vector3(0, 0, 0)
+        self.position = Vector3(0, 0, 0)
         self.mesh = Shot.shot_mesh
         self.material = Shot.shot_material
         self.shot_speed = 6
-        self.direction = vector3(0, 0, 0)
+        self.direction = Vector3(0, 0, 0)
 
     def update(self, delta_time):
         """Animates the missile."""
@@ -162,17 +162,17 @@ def create_terrain():
     pz = size_z / div
 
     # For centering the terrain on the object center
-    origin = vector3(-size_x * 0.5, 0, 0)
+    origin = Vector3(-size_x * 0.5, 0, 0)
 
     terrain_mesh = Mesh("Terrain")
 
     # Create the geometry of the terrain and add it to the mesh
     for dz in range(0, div):
         for dx in range(0, div):
-            p1 = vector3(dx * px, 0, dz * pz) + origin
-            p2 = vector3((dx + 1) * px, 0, dz * pz) + origin
-            p3 = vector3((dx + 1) * px, 0, (dz + 1) * pz) + origin
-            p4 = vector3(dx * px, 0, (dz + 1) * pz) + origin
+            p1 = Vector3(dx * px, 0, dz * pz) + origin
+            p2 = Vector3((dx + 1) * px, 0, dz * pz) + origin
+            p3 = Vector3((dx + 1) * px, 0, (dz + 1) * pz) + origin
+            p4 = Vector3(dx * px, 0, (dz + 1) * pz) + origin
 
             p1.y = sample_height(p1.x, p1.z)
             p2.y = sample_height(p2.x, p2.z)
@@ -188,12 +188,12 @@ def create_terrain():
             terrain_mesh.polygons.append(poly)
 
     # Create materials for the terrain
-    terrain_material = Material(color(0.1, 0.6, 0.1, 1), "TerrainMaterial")
+    terrain_material = Material(Color(0.1, 0.6, 0.1, 1), "TerrainMaterial")
 
     # Create object to display the terrain
     obj = Object3d("TerrainObject")
-    obj.scale = vector3(1, 1, 1)
-    obj.position = vector3(0, -1, 1)
+    obj.scale = Vector3(1, 1, 1)
+    obj.position = Vector3(0, -1, 1)
     obj.mesh = terrain_mesh
     obj.material = terrain_material
 
@@ -217,7 +217,7 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0, 0, 0)
+    scene.camera.position -= Vector3(0, 0, 0)
 
     # Creates the terrain meshes and materials
     terrain_object = create_terrain()
@@ -232,8 +232,8 @@ def main():
     # Storage for all missiles active in the game
     missiles = []
 
-    # Flashing effect color
-    flash_color = color(0, 0, 0, 0)
+    # Flashing effect Color
+    flash_color = Color(0, 0, 0, 0)
     # Total time of the current flash
     total_flash_time = 0
     # Time elapsed for the current flash
@@ -327,7 +327,7 @@ def main():
                 # Check if the missile is close enough to the player to hit him
                 if missile.position.magnitude() < 0.25:
                     # It has hit the player, flash the screen red for one second
-                    flash_color = color(1, 0, 1, 1)
+                    flash_color = Color(1, 0, 1, 1)
                     total_flash_time = flash_timer = 1
                 # Destroy missile (remove it from the scene and add it to the destruction
                 # list so we can remove it in a bit)
@@ -358,7 +358,7 @@ def main():
             for missile in missiles:
                 # Check the distance between the shot and the missile, it it is below
                 # a threshould (in this case 0.5), destroy the missile and the shot
-                distance = vector3.distance(shot.position, missile.position)
+                distance = Vector3.distance(shot.position, missile.position)
                 if distance < 0.5:
                     # Add it to the missile destruction list, and remove it from the scene
                     missiles_to_destroy.append(missile)
@@ -367,7 +367,7 @@ def main():
                     shots_to_destroy.append(shot)
                     scene.remove_object(shot)
                     # Flash the screen cyan for 0.5 seconds
-                    flash_color = color(0, 1, 1, 1)
+                    flash_color = Color(0, 1, 1, 1)
                     total_flash_time = flash_timer = 0.5
 
         # Actually delete objects

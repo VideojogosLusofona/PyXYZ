@@ -2,7 +2,7 @@
 
 import numpy as np
 from quaternion import quaternion, as_rotation_matrix
-from vector3 import vector3
+from vector3 import Vector3
 
 class Object3d:
     """3d object class.
@@ -16,12 +16,12 @@ class Object3d:
         """
         self.name = name
         """ {str} Name of the object"""
-        self.position = vector3()
-        """ {vector3} Local position of the object (relative to parent)"""
+        self.position = Vector3()
+        """ {Vector3} Local position of the object (relative to parent)"""
         self.rotation = quaternion(1, 0, 0, 0)
         """ {quaternion} Local rotation of the object {relative to parent)"""
-        self.scale = vector3(1, 1, 1)
-        """ {vector3} Local scale of the object (relative to parent)"""
+        self.scale = Vector3(1, 1, 1)
+        """ {Vector3} Local scale of the object (relative to parent)"""
         self.mesh = None
         """ {Mesh} Mesh to be rendered in this object"""
         self.material = None
@@ -95,9 +95,9 @@ class Object3d:
 
         Returns:
 
-            {vector3} - Local position of the object
+            {Vector3} - Local position of the object
         """
-        return vector3.from_np(vector3(0, 0, 0).to_np4(1) @ self.get_matrix())
+        return Vector3.from_np(Vector3(0, 0, 0).to_np4(1) @ self.get_matrix())
 
     def forward(self):
         """
@@ -106,9 +106,9 @@ class Object3d:
 
         Returns:
 
-            {vector3} - Local forward vector of the object
+            {Vector3} - Local forward vector of the object
         """
-        return vector3.from_np(vector3(0, 0, 1).to_np4(0) @ self.get_matrix())
+        return Vector3.from_np(Vector3(0, 0, 1).to_np4(0) @ self.get_matrix())
 
     def up(self):
         """
@@ -117,9 +117,9 @@ class Object3d:
 
         Returns:
 
-            {vector3} - Local up vector of the object
+            {Vector3} - Local up vector of the object
         """
-        return vector3.from_np(vector3(0, 1, 0).to_np4(0) @ self.get_matrix())
+        return Vector3.from_np(Vector3(0, 1, 0).to_np4(0) @ self.get_matrix())
 
     def right(self):
         """
@@ -128,9 +128,9 @@ class Object3d:
 
         Returns:
 
-            {vector3} - Local right vector of the object
+            {Vector3} - Local right vector of the object
         """
-        return vector3.from_np(vector3(1, 0, 0).to_np4(0) @ self.get_matrix())
+        return Vector3.from_np(Vector3(1, 0, 0).to_np4(0) @ self.get_matrix())
 
     @staticmethod
     def get_prs_matrix(position, rotation, scale):
@@ -139,11 +139,11 @@ class Object3d:
 
         Arguments:
 
-            position {vector3} - Position
+            position {Vector3} - Position
 
             rotation {quaternion} - Rotation
 
-            scale {vector3} - Scale
+            scale {Vector3} - Scale
 
         Returns:
 

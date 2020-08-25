@@ -21,7 +21,7 @@ It provides very little functionality out-of-the- box: it allows for the program
 
 A scene is composed of 3D objects organized in an optional hierarchical fashion, and each object contains a polygonal mesh and a material that controls how the mesh is rendered. 
 
-At the most basic level, it has a few elementary helper classes, like Color, which describes a color with separate red, green, blue and alpha channels, and Vector3, a straightforward 3D vector implementation.
+At the most basic level, it has a few elementary helper classes, like Color, which describes a Color with separate red, green, blue and alpha channels, and Vector3, a straightforward 3D vector implementation.
 
 The core of the engine is comprised of the Scene, Object3d, Camera and Mesh classes, which handle the rendering itself. 
 
@@ -33,7 +33,7 @@ The Camera is derived from Object3d, so that it can be treated in the same way, 
 
 The Mesh contains a list of polygons, with each polygon being a list of vertex positions in local space. There are no indexing primitives as simplicity is the main driver of the engine. 
 
-The Material class stores the rendering properties like line color and width. A single material can be used by multiple meshes for rendering.
+The Material class stores the rendering properties like line Color and width. A single material can be used by multiple meshes for rendering.
 
 The current implementation of PyXYZ uses Pygame for the actual render- ing. We chose Pygame for its simplicity, support for polygon rendering and full software implementation.
 
@@ -79,13 +79,13 @@ Then, a scene can be setup:
 scene = Scene("TestScene")
 scene.camera = Camera(False , res_x , res_y)
 # Moves the camera back 2 units
-scene.camera.position -= vector3(0,0,2)
+scene.camera.position -= Vector3(0,0,2)
 # Create a sphere and place it in a scene, at position (0,0,0) 
 obj1 = Object3d("TestObject")
-obj1.scale = vector3(1, 1, 1)
-obj1.position = vector3(0, 0, 0)
+obj1.scale = Vector3(1, 1, 1)
+obj1.position = Vector3(0, 0, 0)
 # Set the material of the sphere, in this case it is red
-obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) obj1.material = Material(color(1,0,0,1), "TestMaterial1") scene.add_object(obj1)
+obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) obj1.material = Material(Color(1,0,0,1), "TestMaterial1") scene.add_object(obj1)
 ~~~
 
 To render the scene, the programmer just has to use:

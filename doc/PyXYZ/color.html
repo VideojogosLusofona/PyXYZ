@@ -41,9 +41,9 @@ class InvalidColorOperationException(Exception):
 
     def __str__(self):
         &#34;&#34;&#34;Returns a readable version of the exception&#34;&#34;&#34;
-        return f&#34;Invalid color operation ({self.op}) between {self.type1} and {self.type2}!&#34;
+        return f&#34;Invalid Color operation ({self.op}) between {self.type1} and {self.type2}!&#34;
 
-class color:
+class Color:
     &#34;&#34;&#34;Color class.
     It stores RGBA values as floats, in a range from 0 to 1.
     &#34;&#34;&#34;
@@ -74,163 +74,163 @@ class color:
         stated otherwise, and even so it might require extra setup.&#34;&#34;&#34;
 
     def __str__(self):
-        &#34;&#34;&#34;Converts the color to a displayable string
+        &#34;&#34;&#34;Converts the Color to a displayable string
 
         Returns:
             String - Color in text format (r,g,b,a)&#34;&#34;&#34;
         return f&#34;({self.r},{self.g},{self.b},{self.a})&#34;
 
     def __add__(self, c):
-        &#34;&#34;&#34;Adds this color to another. No validation of the output is done, i.e. any component
-        can overflow. If we try to add anything other than a color to a color, it throws the
+        &#34;&#34;&#34;Adds this Color to another. No validation of the output is done, i.e. any component
+        can overflow. If we try to add anything other than a Color to a Color, it throws the
         InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to add
+            c {Color} -- Color to add
 
         Returns:
-            Color - Sum of this color and the given one
+            Color - Sum of this Color and the given one
         &#34;&#34;&#34;
-        if isinstance(c, color):
-            return color(self.r + c.r, self.g + c.g, self.b + c.b, self.a + c.a)
+        if isinstance(c, Color):
+            return Color(self.r + c.r, self.g + c.g, self.b + c.b, self.a + c.a)
         else:
             raise InvalidColorOperationException(&#34;add&#34;, type(self), type(c))
 
     def __sub__(self, c):
-        &#34;&#34;&#34;Subtracts a color to this color. No validation of the output is done, i.e.
-        any component can underflow. If we try to subtract anything other than a color to
-        a color, it throws the InvalidColorOperationException.
+        &#34;&#34;&#34;Subtracts a Color to this Color. No validation of the output is done, i.e.
+        any component can underflow. If we try to subtract anything other than a Color to
+        a Color, it throws the InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to subtract
+            c {Color} -- Color to subtract
 
         Returns:
-            Color - Subraction of the given color from this color
+            Color - Subraction of the given Color from this Color
         &#34;&#34;&#34;
-        if isinstance(c, color):
-            return color(self.r - c.r, self.g - c.g, self.b - c.b, self.a - c.a)
+        if isinstance(c, Color):
+            return Color(self.r - c.r, self.g - c.g, self.b - c.b, self.a - c.a)
         else:
             raise InvalidColorOperationException(&#34;sub&#34;, type(self), type(c))
 
     def __mul__(self, c):
-        &#34;&#34;&#34;Multiplies this color by another color or a scalar. No validation of the output
+        &#34;&#34;&#34;Multiplies this Color by another Color or a scalar. No validation of the output
         is done, i.e. any component can underflow. If we try to multiply anything other than a
-        color or a scalar, it throws the InvalidColorOperationException.
+        Color or a scalar, it throws the InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to multiply: a component-wise multiplication is done
+            c {Color} -- Color to multiply: a component-wise multiplication is done
             or
-            c {number} -- Scalar to multiply: all components of the color are multiplied by
+            c {number} -- Scalar to multiply: all components of the Color are multiplied by
             this number
 
         Returns:
-            Color - Multiplication of the color
+            Color - Multiplication of the Color
         &#34;&#34;&#34;
         if isinstance(c, (int, float)):
-            return color(self.r * c, self.g * c, self.b * c, self.a * c)
-        elif isinstance(c, color):
-            return color(self.r * c.r, self.g * c.g, self.b * c.b, self.a * c.a)
+            return Color(self.r * c, self.g * c, self.b * c, self.a * c)
+        elif isinstance(c, Color):
+            return Color(self.r * c.r, self.g * c.g, self.b * c.b, self.a * c.a)
         else:
             raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
 
     def __truediv__(self, c):
-        &#34;&#34;&#34;Divides this color by a scalar. No validation of the output is done, i.e. any
+        &#34;&#34;&#34;Divides this Color by a scalar. No validation of the output is done, i.e. any
         component can underflow. If we try to divide anything other than a scalar, it throws
         the InvalidColorOperationException.
 
         Arguments:
-            c {number} -- Scalar to divide: all components of the color are divided by this
+            c {number} -- Scalar to divide: all components of the Color are divided by this
             number
 
         Returns:
             Color - Color divided by the number
         &#34;&#34;&#34;
         if isinstance(c, (int, float)):
-            return color(self.r / c, self.g / c, self.b / c, self.a / c)
+            return Color(self.r / c, self.g / c, self.b / c, self.a / c)
         else:
             raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
 
     def __eq__(self, c):
-        &#34;&#34;&#34;Checks if this color is equal to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Color is equal to the given one, with a tolerance of 0.0001.
         Exception InvalidColorOperationException is raised if we compare something other
-        than a color.
+        than a Color.
 
         Arguments:
-            c {color} -- Color to compare
+            c {Color} -- Color to compare
 
         Returns:
             Bool - True if the colors are the same, false otherwise
         &#34;&#34;&#34;
-        if isinstance(c, color):
+        if isinstance(c, Color):
             return ((self - c).magnitude()) &lt; 0.0001
         else:
             raise InvalidColorOperationException(&#34;eq&#34;, type(self), type(c))
 
     def __ne__(self, c):
-        &#34;&#34;&#34;Checks if this color is different to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Color is different to the given one, with a tolerance of 0.0001.
         Exception InvalidColorOperationException is raised if we compare something other
-        than a color.
+        than a Color.
 
         Arguments:
-            c {color} -- Color to compare
+            c {Color} -- Color to compare
 
         Returns:
             Bool - True if the colors are different, false otherwise
         &#34;&#34;&#34;
-        if isinstance(c, color):
+        if isinstance(c, Color):
             return ((self - c).magnitude()) &gt; 0.0001
         else:
             raise InvalidColorOperationException(&#34;neq&#34;, type(self), type(c))
 
     def __isub__(self, c):
-        &#34;&#34;&#34;Subtracts a color to this color. No validation of the output is done, i.e.
-        any component can underflow. If we try to subtract anything other than a color to
-        a color, it throws the InvalidColorOperationException.
+        &#34;&#34;&#34;Subtracts a Color to this Color. No validation of the output is done, i.e.
+        any component can underflow. If we try to subtract anything other than a Color to
+        a Color, it throws the InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to subtract
+            c {Color} -- Color to subtract
 
         Returns:
-            Color - Subraction of the given color from this color
+            Color - Subraction of the given Color from this Color
         &#34;&#34;&#34;
         return self - c
 
     def __iadd__(self, c):
-        &#34;&#34;&#34;Adds this color to another. No validation of the output is done, i.e. any component
-        can overflow. If we try to add anything other than a color to a color, it throws the
+        &#34;&#34;&#34;Adds this Color to another. No validation of the output is done, i.e. any component
+        can overflow. If we try to add anything other than a Color to a Color, it throws the
         InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to add
+            c {Color} -- Color to add
 
         Returns:
-            Color - Sum of this color and the given one
+            Color - Sum of this Color and the given one
         &#34;&#34;&#34;
         return self + c
 
     def __imul__(self, c):
-        &#34;&#34;&#34;Multiplies this color by another color or a scalar. No validation of the output
+        &#34;&#34;&#34;Multiplies this Color by another Color or a scalar. No validation of the output
         is done, i.e. any component can underflow. If we try to multiply anything other than
-        a color or a scalar, it throws the InvalidColorOperationException.
+        a Color or a scalar, it throws the InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to multiply: a component-wise multiplication is done
+            c {Color} -- Color to multiply: a component-wise multiplication is done
             or
-            c {number} -- Scalar to multiply: all components of the color are multiplied by this
+            c {number} -- Scalar to multiply: all components of the Color are multiplied by this
             number
 
         Returns:
-            Color - Multiplication of the color
+            Color - Multiplication of the Color
         &#34;&#34;&#34;
         return self * c
 
     def __idiv__(self, c):
-        &#34;&#34;&#34;Divides this color by a scalar. No validation of the output is done, i.e. any
+        &#34;&#34;&#34;Divides this Color by a scalar. No validation of the output is done, i.e. any
         component can underflow. If we try to divide anything other than a scalar, it
         throws the InvalidColorOperationException.
 
         Arguments:
-            c {number} -- Scalar to divide: all components of the color are divided by this number
+            c {number} -- Scalar to divide: all components of the Color are divided by this number
 
         Returns:
             Color - Color divided by the number
@@ -238,39 +238,39 @@ class color:
         return self / c
 
     def __neg__(self):
-        &#34;&#34;&#34;Inverts this color. All components except for alpha are inverted.
+        &#34;&#34;&#34;Inverts this Color. All components except for alpha are inverted.
 
         Returns:
             Color - Color (1-r, 1-g, 1-b, a)
         &#34;&#34;&#34;
-        return color(1-self.r, 1-self.g, 1-self.b, self.a)
+        return Color(1-self.r, 1-self.g, 1-self.b, self.a)
 
     def magnitude(self):
-        &#34;&#34;&#34;Returns the magnitude of the color.
+        &#34;&#34;&#34;Returns the magnitude of the Color.
 
         Returns:
-            Number - Magnitude of the color as a 4D vector
+            Number - Magnitude of the Color as a 4D vector
         &#34;&#34;&#34;
         return math.sqrt(self.dot(self))
 
     def dot(self, c):
-        &#34;&#34;&#34;Computes the dot product of this color with another.
-        If we try to do this operation with anything other than a color, it throws the
+        &#34;&#34;&#34;Computes the dot product of this Color with another.
+        If we try to do this operation with anything other than a Color, it throws the
         InvalidColorOperationException.
 
         Arguments:
-            c {color} -- Color to do the dot product with
+            c {Color} -- Color to do the dot product with
 
         Returns:
             Number - Scalar value corresponding to the dot product of both colors
         &#34;&#34;&#34;
-        if isinstance(c, color):
+        if isinstance(c, Color):
             return self.r * c.r + self.g * c.g + self.b * c.b + self.a * c.a
         else:
             raise InvalidColorOperationException(&#34;dot&#34;, type(self), type(c))
 
     def normalize(self):
-        &#34;&#34;&#34;Normalizes this color, as if it was a 4D vector.
+        &#34;&#34;&#34;Normalizes this Color, as if it was a 4D vector.
         &#34;&#34;&#34;
         d = 1.0 / self.magnitude()
         self.r *= d
@@ -279,25 +279,25 @@ class color:
         self.a *= d
 
     def normalized(self):
-        &#34;&#34;&#34;Returns the normalized version of this color, treating it as a 4D vector.
+        &#34;&#34;&#34;Returns the normalized version of this Color, treating it as a 4D vector.
 
         Returns:
-            Color - Normalized color
+            Color - Normalized Color
         &#34;&#34;&#34;
         d = 1.0 / self.magnitude()
-        return color(self.r * d, self.g * d, self.b * d, self.a * d)
+        return Color(self.r * d, self.g * d, self.b * d, self.a * d)
 
     def premult_alpha(self):
         &#34;&#34;&#34;Multiplies the RGB components with the alpha component, for use with pre-multiplied
-        alpha blend mode and returns this new color.
+        alpha blend mode and returns this new Color.
 
         Returns:
-            Color - Premultiplied color
+            Color - Premultiplied Color
         &#34;&#34;&#34;
-        return color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
+        return Color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
 
     def tuple3(self):
-        &#34;&#34;&#34;Converts a color to a 3-tuple, to be used with Pygame
+        &#34;&#34;&#34;Converts a Color to a 3-tuple, to be used with Pygame
 
         Returns:
             Tuple - (r * 255, g * 255, b * 255)
@@ -305,7 +305,7 @@ class color:
         return (self.r * 255, self.g * 255, self.b * 255)
 
     def tuple4(self):
-        &#34;&#34;&#34;Converts a color to a 4-tuple, to be used with Pygame
+        &#34;&#34;&#34;Converts a Color to a 4-tuple, to be used with Pygame
 
         Returns:
             Tuple - (r * 255, g * 255, b * 255, a * 255)
@@ -313,7 +313,7 @@ class color:
         return (self.r * 255, self.g * 255, self.b * 255, self.a * 255)
 
     def saturate(self):
-        &#34;&#34;&#34;Clamps all the color components between the valid [0..1] range
+        &#34;&#34;&#34;Clamps all the Color components between the valid [0..1] range
         &#34;&#34;&#34;
         self.r = min(max(self.r, 0), 1)
         self.g = min(max(self.g, 0), 1)
@@ -321,12 +321,12 @@ class color:
         self.a = min(max(self.a, 0), 1)
 
     def saturated(self):
-        &#34;&#34;&#34;Returns a clamped version of this color
+        &#34;&#34;&#34;Returns a clamped version of this Color
 
         Returns:
-            Color - Clamped color
+            Color - Clamped Color
         &#34;&#34;&#34;
-        return color(
+        return Color(
             min(max(self.r, 0), 1),
             min(max(self.g, 0), 1),
             min(max(self.b, 0), 1),
@@ -343,6 +343,537 @@ class color:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="PyXYZ.color.Color"><code class="flex name class">
+<span>class <span class="ident">Color</span></span>
+<span>(</span><span>r=0, g=0, b=0, a=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Color class.
+It stores RGBA values as floats, in a range from 0 to 1.</p>
+<h2 id="arguments">Arguments</h2>
+<p>r {number} &ndash; Red component, [0..1], defaults to 0</p>
+<p>g {number} &ndash; Green component, [0..1], defaults to 0</p>
+<p>b {number} &ndash; Blue component, [0..1], defaults to 0</p>
+<p>a {number} &ndash; Alpha component, [0..1], defaults to 1</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Color:
+    &#34;&#34;&#34;Color class.
+    It stores RGBA values as floats, in a range from 0 to 1.
+    &#34;&#34;&#34;
+    def __init__(self, r=0, g=0, b=0, a=1):
+        &#34;&#34;&#34;
+        Arguments:
+
+            r {number} -- Red component, [0..1], defaults to 0
+
+            g {number} -- Green component, [0..1], defaults to 0
+
+            b {number} -- Blue component, [0..1], defaults to 0
+
+            a {number} -- Alpha component, [0..1], defaults to 1
+        &#34;&#34;&#34;
+        self.r = r
+        &#34;&#34;&#34;{number} Red component. Should be in the [0..1] range, although there is no
+        guarantees&#34;&#34;&#34;
+        self.g = g
+        &#34;&#34;&#34;{number} Green component. Should be in the [0..1] range, although there is no
+        guarantees&#34;&#34;&#34;
+        self.b = b
+        &#34;&#34;&#34;{number} Blue component. Should be in the [0..1] range, although there is no
+        guarantees&#34;&#34;&#34;
+        self.a = a
+        &#34;&#34;&#34;{number} Alpha component. Should be in the [0..1] range, although there is no
+        guarantees. Note that most Pygame functions don&#39;t use the alpha component, unless
+        stated otherwise, and even so it might require extra setup.&#34;&#34;&#34;
+
+    def __str__(self):
+        &#34;&#34;&#34;Converts the Color to a displayable string
+
+        Returns:
+            String - Color in text format (r,g,b,a)&#34;&#34;&#34;
+        return f&#34;({self.r},{self.g},{self.b},{self.a})&#34;
+
+    def __add__(self, c):
+        &#34;&#34;&#34;Adds this Color to another. No validation of the output is done, i.e. any component
+        can overflow. If we try to add anything other than a Color to a Color, it throws the
+        InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to add
+
+        Returns:
+            Color - Sum of this Color and the given one
+        &#34;&#34;&#34;
+        if isinstance(c, Color):
+            return Color(self.r + c.r, self.g + c.g, self.b + c.b, self.a + c.a)
+        else:
+            raise InvalidColorOperationException(&#34;add&#34;, type(self), type(c))
+
+    def __sub__(self, c):
+        &#34;&#34;&#34;Subtracts a Color to this Color. No validation of the output is done, i.e.
+        any component can underflow. If we try to subtract anything other than a Color to
+        a Color, it throws the InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to subtract
+
+        Returns:
+            Color - Subraction of the given Color from this Color
+        &#34;&#34;&#34;
+        if isinstance(c, Color):
+            return Color(self.r - c.r, self.g - c.g, self.b - c.b, self.a - c.a)
+        else:
+            raise InvalidColorOperationException(&#34;sub&#34;, type(self), type(c))
+
+    def __mul__(self, c):
+        &#34;&#34;&#34;Multiplies this Color by another Color or a scalar. No validation of the output
+        is done, i.e. any component can underflow. If we try to multiply anything other than a
+        Color or a scalar, it throws the InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to multiply: a component-wise multiplication is done
+            or
+            c {number} -- Scalar to multiply: all components of the Color are multiplied by
+            this number
+
+        Returns:
+            Color - Multiplication of the Color
+        &#34;&#34;&#34;
+        if isinstance(c, (int, float)):
+            return Color(self.r * c, self.g * c, self.b * c, self.a * c)
+        elif isinstance(c, Color):
+            return Color(self.r * c.r, self.g * c.g, self.b * c.b, self.a * c.a)
+        else:
+            raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
+
+    def __truediv__(self, c):
+        &#34;&#34;&#34;Divides this Color by a scalar. No validation of the output is done, i.e. any
+        component can underflow. If we try to divide anything other than a scalar, it throws
+        the InvalidColorOperationException.
+
+        Arguments:
+            c {number} -- Scalar to divide: all components of the Color are divided by this
+            number
+
+        Returns:
+            Color - Color divided by the number
+        &#34;&#34;&#34;
+        if isinstance(c, (int, float)):
+            return Color(self.r / c, self.g / c, self.b / c, self.a / c)
+        else:
+            raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
+
+    def __eq__(self, c):
+        &#34;&#34;&#34;Checks if this Color is equal to the given one, with a tolerance of 0.0001.
+        Exception InvalidColorOperationException is raised if we compare something other
+        than a Color.
+
+        Arguments:
+            c {Color} -- Color to compare
+
+        Returns:
+            Bool - True if the colors are the same, false otherwise
+        &#34;&#34;&#34;
+        if isinstance(c, Color):
+            return ((self - c).magnitude()) &lt; 0.0001
+        else:
+            raise InvalidColorOperationException(&#34;eq&#34;, type(self), type(c))
+
+    def __ne__(self, c):
+        &#34;&#34;&#34;Checks if this Color is different to the given one, with a tolerance of 0.0001.
+        Exception InvalidColorOperationException is raised if we compare something other
+        than a Color.
+
+        Arguments:
+            c {Color} -- Color to compare
+
+        Returns:
+            Bool - True if the colors are different, false otherwise
+        &#34;&#34;&#34;
+        if isinstance(c, Color):
+            return ((self - c).magnitude()) &gt; 0.0001
+        else:
+            raise InvalidColorOperationException(&#34;neq&#34;, type(self), type(c))
+
+    def __isub__(self, c):
+        &#34;&#34;&#34;Subtracts a Color to this Color. No validation of the output is done, i.e.
+        any component can underflow. If we try to subtract anything other than a Color to
+        a Color, it throws the InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to subtract
+
+        Returns:
+            Color - Subraction of the given Color from this Color
+        &#34;&#34;&#34;
+        return self - c
+
+    def __iadd__(self, c):
+        &#34;&#34;&#34;Adds this Color to another. No validation of the output is done, i.e. any component
+        can overflow. If we try to add anything other than a Color to a Color, it throws the
+        InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to add
+
+        Returns:
+            Color - Sum of this Color and the given one
+        &#34;&#34;&#34;
+        return self + c
+
+    def __imul__(self, c):
+        &#34;&#34;&#34;Multiplies this Color by another Color or a scalar. No validation of the output
+        is done, i.e. any component can underflow. If we try to multiply anything other than
+        a Color or a scalar, it throws the InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to multiply: a component-wise multiplication is done
+            or
+            c {number} -- Scalar to multiply: all components of the Color are multiplied by this
+            number
+
+        Returns:
+            Color - Multiplication of the Color
+        &#34;&#34;&#34;
+        return self * c
+
+    def __idiv__(self, c):
+        &#34;&#34;&#34;Divides this Color by a scalar. No validation of the output is done, i.e. any
+        component can underflow. If we try to divide anything other than a scalar, it
+        throws the InvalidColorOperationException.
+
+        Arguments:
+            c {number} -- Scalar to divide: all components of the Color are divided by this number
+
+        Returns:
+            Color - Color divided by the number
+        &#34;&#34;&#34;
+        return self / c
+
+    def __neg__(self):
+        &#34;&#34;&#34;Inverts this Color. All components except for alpha are inverted.
+
+        Returns:
+            Color - Color (1-r, 1-g, 1-b, a)
+        &#34;&#34;&#34;
+        return Color(1-self.r, 1-self.g, 1-self.b, self.a)
+
+    def magnitude(self):
+        &#34;&#34;&#34;Returns the magnitude of the Color.
+
+        Returns:
+            Number - Magnitude of the Color as a 4D vector
+        &#34;&#34;&#34;
+        return math.sqrt(self.dot(self))
+
+    def dot(self, c):
+        &#34;&#34;&#34;Computes the dot product of this Color with another.
+        If we try to do this operation with anything other than a Color, it throws the
+        InvalidColorOperationException.
+
+        Arguments:
+            c {Color} -- Color to do the dot product with
+
+        Returns:
+            Number - Scalar value corresponding to the dot product of both colors
+        &#34;&#34;&#34;
+        if isinstance(c, Color):
+            return self.r * c.r + self.g * c.g + self.b * c.b + self.a * c.a
+        else:
+            raise InvalidColorOperationException(&#34;dot&#34;, type(self), type(c))
+
+    def normalize(self):
+        &#34;&#34;&#34;Normalizes this Color, as if it was a 4D vector.
+        &#34;&#34;&#34;
+        d = 1.0 / self.magnitude()
+        self.r *= d
+        self.g *= d
+        self.b *= d
+        self.a *= d
+
+    def normalized(self):
+        &#34;&#34;&#34;Returns the normalized version of this Color, treating it as a 4D vector.
+
+        Returns:
+            Color - Normalized Color
+        &#34;&#34;&#34;
+        d = 1.0 / self.magnitude()
+        return Color(self.r * d, self.g * d, self.b * d, self.a * d)
+
+    def premult_alpha(self):
+        &#34;&#34;&#34;Multiplies the RGB components with the alpha component, for use with pre-multiplied
+        alpha blend mode and returns this new Color.
+
+        Returns:
+            Color - Premultiplied Color
+        &#34;&#34;&#34;
+        return Color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
+
+    def tuple3(self):
+        &#34;&#34;&#34;Converts a Color to a 3-tuple, to be used with Pygame
+
+        Returns:
+            Tuple - (r * 255, g * 255, b * 255)
+        &#34;&#34;&#34;
+        return (self.r * 255, self.g * 255, self.b * 255)
+
+    def tuple4(self):
+        &#34;&#34;&#34;Converts a Color to a 4-tuple, to be used with Pygame
+
+        Returns:
+            Tuple - (r * 255, g * 255, b * 255, a * 255)
+        &#34;&#34;&#34;
+        return (self.r * 255, self.g * 255, self.b * 255, self.a * 255)
+
+    def saturate(self):
+        &#34;&#34;&#34;Clamps all the Color components between the valid [0..1] range
+        &#34;&#34;&#34;
+        self.r = min(max(self.r, 0), 1)
+        self.g = min(max(self.g, 0), 1)
+        self.b = min(max(self.b, 0), 1)
+        self.a = min(max(self.a, 0), 1)
+
+    def saturated(self):
+        &#34;&#34;&#34;Returns a clamped version of this Color
+
+        Returns:
+            Color - Clamped Color
+        &#34;&#34;&#34;
+        return Color(
+            min(max(self.r, 0), 1),
+            min(max(self.g, 0), 1),
+            min(max(self.b, 0), 1),
+            min(max(self.a, 0), 1)
+        )</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="PyXYZ.color.Color.a"><code class="name">var <span class="ident">a</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Alpha component. Should be in the [0..1] range, although there is no
+guarantees. Note that most Pygame functions don't use the alpha component, unless
+stated otherwise, and even so it might require extra setup.</p></div>
+</dd>
+<dt id="PyXYZ.color.Color.b"><code class="name">var <span class="ident">b</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Blue component. Should be in the [0..1] range, although there is no
+guarantees</p></div>
+</dd>
+<dt id="PyXYZ.color.Color.g"><code class="name">var <span class="ident">g</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Green component. Should be in the [0..1] range, although there is no
+guarantees</p></div>
+</dd>
+<dt id="PyXYZ.color.Color.r"><code class="name">var <span class="ident">r</span></code></dt>
+<dd>
+<div class="desc"><p>{number} Red component. Should be in the [0..1] range, although there is no
+guarantees</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="PyXYZ.color.Color.dot"><code class="name flex">
+<span>def <span class="ident">dot</span></span>(<span>self, c)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Computes the dot product of this Color with another.
+If we try to do this operation with anything other than a Color, it throws the
+InvalidColorOperationException.</p>
+<h2 id="arguments">Arguments</h2>
+<p>c {Color} &ndash; Color to do the dot product with</p>
+<h2 id="returns">Returns</h2>
+<p>Number - Scalar value corresponding to the dot product of both colors</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dot(self, c):
+    &#34;&#34;&#34;Computes the dot product of this Color with another.
+    If we try to do this operation with anything other than a Color, it throws the
+    InvalidColorOperationException.
+
+    Arguments:
+        c {Color} -- Color to do the dot product with
+
+    Returns:
+        Number - Scalar value corresponding to the dot product of both colors
+    &#34;&#34;&#34;
+    if isinstance(c, Color):
+        return self.r * c.r + self.g * c.g + self.b * c.b + self.a * c.a
+    else:
+        raise InvalidColorOperationException(&#34;dot&#34;, type(self), type(c))</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.magnitude"><code class="name flex">
+<span>def <span class="ident">magnitude</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the magnitude of the Color.</p>
+<h2 id="returns">Returns</h2>
+<p>Number - Magnitude of the Color as a 4D vector</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def magnitude(self):
+    &#34;&#34;&#34;Returns the magnitude of the Color.
+
+    Returns:
+        Number - Magnitude of the Color as a 4D vector
+    &#34;&#34;&#34;
+    return math.sqrt(self.dot(self))</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.normalize"><code class="name flex">
+<span>def <span class="ident">normalize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Normalizes this Color, as if it was a 4D vector.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalize(self):
+    &#34;&#34;&#34;Normalizes this Color, as if it was a 4D vector.
+    &#34;&#34;&#34;
+    d = 1.0 / self.magnitude()
+    self.r *= d
+    self.g *= d
+    self.b *= d
+    self.a *= d</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.normalized"><code class="name flex">
+<span>def <span class="ident">normalized</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns the normalized version of this Color, treating it as a 4D vector.</p>
+<h2 id="returns">Returns</h2>
+<p>Color - Normalized Color</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def normalized(self):
+    &#34;&#34;&#34;Returns the normalized version of this Color, treating it as a 4D vector.
+
+    Returns:
+        Color - Normalized Color
+    &#34;&#34;&#34;
+    d = 1.0 / self.magnitude()
+    return Color(self.r * d, self.g * d, self.b * d, self.a * d)</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.premult_alpha"><code class="name flex">
+<span>def <span class="ident">premult_alpha</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Multiplies the RGB components with the alpha component, for use with pre-multiplied
+alpha blend mode and returns this new Color.</p>
+<h2 id="returns">Returns</h2>
+<p>Color - Premultiplied Color</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def premult_alpha(self):
+    &#34;&#34;&#34;Multiplies the RGB components with the alpha component, for use with pre-multiplied
+    alpha blend mode and returns this new Color.
+
+    Returns:
+        Color - Premultiplied Color
+    &#34;&#34;&#34;
+    return Color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.saturate"><code class="name flex">
+<span>def <span class="ident">saturate</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Clamps all the Color components between the valid [0..1] range</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def saturate(self):
+    &#34;&#34;&#34;Clamps all the Color components between the valid [0..1] range
+    &#34;&#34;&#34;
+    self.r = min(max(self.r, 0), 1)
+    self.g = min(max(self.g, 0), 1)
+    self.b = min(max(self.b, 0), 1)
+    self.a = min(max(self.a, 0), 1)</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.saturated"><code class="name flex">
+<span>def <span class="ident">saturated</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns a clamped version of this Color</p>
+<h2 id="returns">Returns</h2>
+<p>Color - Clamped Color</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def saturated(self):
+    &#34;&#34;&#34;Returns a clamped version of this Color
+
+    Returns:
+        Color - Clamped Color
+    &#34;&#34;&#34;
+    return Color(
+        min(max(self.r, 0), 1),
+        min(max(self.g, 0), 1),
+        min(max(self.b, 0), 1),
+        min(max(self.a, 0), 1)
+    )</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.tuple3"><code class="name flex">
+<span>def <span class="ident">tuple3</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a Color to a 3-tuple, to be used with Pygame</p>
+<h2 id="returns">Returns</h2>
+<p>Tuple - (r * 255, g * 255, b * 255)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tuple3(self):
+    &#34;&#34;&#34;Converts a Color to a 3-tuple, to be used with Pygame
+
+    Returns:
+        Tuple - (r * 255, g * 255, b * 255)
+    &#34;&#34;&#34;
+    return (self.r * 255, self.g * 255, self.b * 255)</code></pre>
+</details>
+</dd>
+<dt id="PyXYZ.color.Color.tuple4"><code class="name flex">
+<span>def <span class="ident">tuple4</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Converts a Color to a 4-tuple, to be used with Pygame</p>
+<h2 id="returns">Returns</h2>
+<p>Tuple - (r * 255, g * 255, b * 255, a * 255)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def tuple4(self):
+    &#34;&#34;&#34;Converts a Color to a 4-tuple, to be used with Pygame
+
+    Returns:
+        Tuple - (r * 255, g * 255, b * 255, a * 255)
+    &#34;&#34;&#34;
+    return (self.r * 255, self.g * 255, self.b * 255, self.a * 255)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="PyXYZ.color.InvalidColorOperationException"><code class="flex name class">
 <span>class <span class="ident">InvalidColorOperationException</span></span>
 <span>(</span><span>op, type1, type2)</span>
@@ -363,544 +894,13 @@ class color:
 
     def __str__(self):
         &#34;&#34;&#34;Returns a readable version of the exception&#34;&#34;&#34;
-        return f&#34;Invalid color operation ({self.op}) between {self.type1} and {self.type2}!&#34;</code></pre>
+        return f&#34;Invalid Color operation ({self.op}) between {self.type1} and {self.type2}!&#34;</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
-</dd>
-<dt id="PyXYZ.color.color"><code class="flex name class">
-<span>class <span class="ident">color</span></span>
-<span>(</span><span>r=0, g=0, b=0, a=1)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Color class.
-It stores RGBA values as floats, in a range from 0 to 1.</p>
-<h2 id="arguments">Arguments</h2>
-<p>r {number} &ndash; Red component, [0..1], defaults to 0</p>
-<p>g {number} &ndash; Green component, [0..1], defaults to 0</p>
-<p>b {number} &ndash; Blue component, [0..1], defaults to 0</p>
-<p>a {number} &ndash; Alpha component, [0..1], defaults to 1</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class color:
-    &#34;&#34;&#34;Color class.
-    It stores RGBA values as floats, in a range from 0 to 1.
-    &#34;&#34;&#34;
-    def __init__(self, r=0, g=0, b=0, a=1):
-        &#34;&#34;&#34;
-        Arguments:
-
-            r {number} -- Red component, [0..1], defaults to 0
-
-            g {number} -- Green component, [0..1], defaults to 0
-
-            b {number} -- Blue component, [0..1], defaults to 0
-
-            a {number} -- Alpha component, [0..1], defaults to 1
-        &#34;&#34;&#34;
-        self.r = r
-        &#34;&#34;&#34;{number} Red component. Should be in the [0..1] range, although there is no
-        guarantees&#34;&#34;&#34;
-        self.g = g
-        &#34;&#34;&#34;{number} Green component. Should be in the [0..1] range, although there is no
-        guarantees&#34;&#34;&#34;
-        self.b = b
-        &#34;&#34;&#34;{number} Blue component. Should be in the [0..1] range, although there is no
-        guarantees&#34;&#34;&#34;
-        self.a = a
-        &#34;&#34;&#34;{number} Alpha component. Should be in the [0..1] range, although there is no
-        guarantees. Note that most Pygame functions don&#39;t use the alpha component, unless
-        stated otherwise, and even so it might require extra setup.&#34;&#34;&#34;
-
-    def __str__(self):
-        &#34;&#34;&#34;Converts the color to a displayable string
-
-        Returns:
-            String - Color in text format (r,g,b,a)&#34;&#34;&#34;
-        return f&#34;({self.r},{self.g},{self.b},{self.a})&#34;
-
-    def __add__(self, c):
-        &#34;&#34;&#34;Adds this color to another. No validation of the output is done, i.e. any component
-        can overflow. If we try to add anything other than a color to a color, it throws the
-        InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to add
-
-        Returns:
-            Color - Sum of this color and the given one
-        &#34;&#34;&#34;
-        if isinstance(c, color):
-            return color(self.r + c.r, self.g + c.g, self.b + c.b, self.a + c.a)
-        else:
-            raise InvalidColorOperationException(&#34;add&#34;, type(self), type(c))
-
-    def __sub__(self, c):
-        &#34;&#34;&#34;Subtracts a color to this color. No validation of the output is done, i.e.
-        any component can underflow. If we try to subtract anything other than a color to
-        a color, it throws the InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to subtract
-
-        Returns:
-            Color - Subraction of the given color from this color
-        &#34;&#34;&#34;
-        if isinstance(c, color):
-            return color(self.r - c.r, self.g - c.g, self.b - c.b, self.a - c.a)
-        else:
-            raise InvalidColorOperationException(&#34;sub&#34;, type(self), type(c))
-
-    def __mul__(self, c):
-        &#34;&#34;&#34;Multiplies this color by another color or a scalar. No validation of the output
-        is done, i.e. any component can underflow. If we try to multiply anything other than a
-        color or a scalar, it throws the InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to multiply: a component-wise multiplication is done
-            or
-            c {number} -- Scalar to multiply: all components of the color are multiplied by
-            this number
-
-        Returns:
-            Color - Multiplication of the color
-        &#34;&#34;&#34;
-        if isinstance(c, (int, float)):
-            return color(self.r * c, self.g * c, self.b * c, self.a * c)
-        elif isinstance(c, color):
-            return color(self.r * c.r, self.g * c.g, self.b * c.b, self.a * c.a)
-        else:
-            raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
-
-    def __truediv__(self, c):
-        &#34;&#34;&#34;Divides this color by a scalar. No validation of the output is done, i.e. any
-        component can underflow. If we try to divide anything other than a scalar, it throws
-        the InvalidColorOperationException.
-
-        Arguments:
-            c {number} -- Scalar to divide: all components of the color are divided by this
-            number
-
-        Returns:
-            Color - Color divided by the number
-        &#34;&#34;&#34;
-        if isinstance(c, (int, float)):
-            return color(self.r / c, self.g / c, self.b / c, self.a / c)
-        else:
-            raise InvalidColorOperationException(&#34;mult&#34;, type(self), type(c))
-
-    def __eq__(self, c):
-        &#34;&#34;&#34;Checks if this color is equal to the given one, with a tolerance of 0.0001.
-        Exception InvalidColorOperationException is raised if we compare something other
-        than a color.
-
-        Arguments:
-            c {color} -- Color to compare
-
-        Returns:
-            Bool - True if the colors are the same, false otherwise
-        &#34;&#34;&#34;
-        if isinstance(c, color):
-            return ((self - c).magnitude()) &lt; 0.0001
-        else:
-            raise InvalidColorOperationException(&#34;eq&#34;, type(self), type(c))
-
-    def __ne__(self, c):
-        &#34;&#34;&#34;Checks if this color is different to the given one, with a tolerance of 0.0001.
-        Exception InvalidColorOperationException is raised if we compare something other
-        than a color.
-
-        Arguments:
-            c {color} -- Color to compare
-
-        Returns:
-            Bool - True if the colors are different, false otherwise
-        &#34;&#34;&#34;
-        if isinstance(c, color):
-            return ((self - c).magnitude()) &gt; 0.0001
-        else:
-            raise InvalidColorOperationException(&#34;neq&#34;, type(self), type(c))
-
-    def __isub__(self, c):
-        &#34;&#34;&#34;Subtracts a color to this color. No validation of the output is done, i.e.
-        any component can underflow. If we try to subtract anything other than a color to
-        a color, it throws the InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to subtract
-
-        Returns:
-            Color - Subraction of the given color from this color
-        &#34;&#34;&#34;
-        return self - c
-
-    def __iadd__(self, c):
-        &#34;&#34;&#34;Adds this color to another. No validation of the output is done, i.e. any component
-        can overflow. If we try to add anything other than a color to a color, it throws the
-        InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to add
-
-        Returns:
-            Color - Sum of this color and the given one
-        &#34;&#34;&#34;
-        return self + c
-
-    def __imul__(self, c):
-        &#34;&#34;&#34;Multiplies this color by another color or a scalar. No validation of the output
-        is done, i.e. any component can underflow. If we try to multiply anything other than
-        a color or a scalar, it throws the InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to multiply: a component-wise multiplication is done
-            or
-            c {number} -- Scalar to multiply: all components of the color are multiplied by this
-            number
-
-        Returns:
-            Color - Multiplication of the color
-        &#34;&#34;&#34;
-        return self * c
-
-    def __idiv__(self, c):
-        &#34;&#34;&#34;Divides this color by a scalar. No validation of the output is done, i.e. any
-        component can underflow. If we try to divide anything other than a scalar, it
-        throws the InvalidColorOperationException.
-
-        Arguments:
-            c {number} -- Scalar to divide: all components of the color are divided by this number
-
-        Returns:
-            Color - Color divided by the number
-        &#34;&#34;&#34;
-        return self / c
-
-    def __neg__(self):
-        &#34;&#34;&#34;Inverts this color. All components except for alpha are inverted.
-
-        Returns:
-            Color - Color (1-r, 1-g, 1-b, a)
-        &#34;&#34;&#34;
-        return color(1-self.r, 1-self.g, 1-self.b, self.a)
-
-    def magnitude(self):
-        &#34;&#34;&#34;Returns the magnitude of the color.
-
-        Returns:
-            Number - Magnitude of the color as a 4D vector
-        &#34;&#34;&#34;
-        return math.sqrt(self.dot(self))
-
-    def dot(self, c):
-        &#34;&#34;&#34;Computes the dot product of this color with another.
-        If we try to do this operation with anything other than a color, it throws the
-        InvalidColorOperationException.
-
-        Arguments:
-            c {color} -- Color to do the dot product with
-
-        Returns:
-            Number - Scalar value corresponding to the dot product of both colors
-        &#34;&#34;&#34;
-        if isinstance(c, color):
-            return self.r * c.r + self.g * c.g + self.b * c.b + self.a * c.a
-        else:
-            raise InvalidColorOperationException(&#34;dot&#34;, type(self), type(c))
-
-    def normalize(self):
-        &#34;&#34;&#34;Normalizes this color, as if it was a 4D vector.
-        &#34;&#34;&#34;
-        d = 1.0 / self.magnitude()
-        self.r *= d
-        self.g *= d
-        self.b *= d
-        self.a *= d
-
-    def normalized(self):
-        &#34;&#34;&#34;Returns the normalized version of this color, treating it as a 4D vector.
-
-        Returns:
-            Color - Normalized color
-        &#34;&#34;&#34;
-        d = 1.0 / self.magnitude()
-        return color(self.r * d, self.g * d, self.b * d, self.a * d)
-
-    def premult_alpha(self):
-        &#34;&#34;&#34;Multiplies the RGB components with the alpha component, for use with pre-multiplied
-        alpha blend mode and returns this new color.
-
-        Returns:
-            Color - Premultiplied color
-        &#34;&#34;&#34;
-        return color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
-
-    def tuple3(self):
-        &#34;&#34;&#34;Converts a color to a 3-tuple, to be used with Pygame
-
-        Returns:
-            Tuple - (r * 255, g * 255, b * 255)
-        &#34;&#34;&#34;
-        return (self.r * 255, self.g * 255, self.b * 255)
-
-    def tuple4(self):
-        &#34;&#34;&#34;Converts a color to a 4-tuple, to be used with Pygame
-
-        Returns:
-            Tuple - (r * 255, g * 255, b * 255, a * 255)
-        &#34;&#34;&#34;
-        return (self.r * 255, self.g * 255, self.b * 255, self.a * 255)
-
-    def saturate(self):
-        &#34;&#34;&#34;Clamps all the color components between the valid [0..1] range
-        &#34;&#34;&#34;
-        self.r = min(max(self.r, 0), 1)
-        self.g = min(max(self.g, 0), 1)
-        self.b = min(max(self.b, 0), 1)
-        self.a = min(max(self.a, 0), 1)
-
-    def saturated(self):
-        &#34;&#34;&#34;Returns a clamped version of this color
-
-        Returns:
-            Color - Clamped color
-        &#34;&#34;&#34;
-        return color(
-            min(max(self.r, 0), 1),
-            min(max(self.g, 0), 1),
-            min(max(self.b, 0), 1),
-            min(max(self.a, 0), 1)
-        )</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="PyXYZ.color.color.a"><code class="name">var <span class="ident">a</span></code></dt>
-<dd>
-<div class="desc"><p>{number} Alpha component. Should be in the [0..1] range, although there is no
-guarantees. Note that most Pygame functions don't use the alpha component, unless
-stated otherwise, and even so it might require extra setup.</p></div>
-</dd>
-<dt id="PyXYZ.color.color.b"><code class="name">var <span class="ident">b</span></code></dt>
-<dd>
-<div class="desc"><p>{number} Blue component. Should be in the [0..1] range, although there is no
-guarantees</p></div>
-</dd>
-<dt id="PyXYZ.color.color.g"><code class="name">var <span class="ident">g</span></code></dt>
-<dd>
-<div class="desc"><p>{number} Green component. Should be in the [0..1] range, although there is no
-guarantees</p></div>
-</dd>
-<dt id="PyXYZ.color.color.r"><code class="name">var <span class="ident">r</span></code></dt>
-<dd>
-<div class="desc"><p>{number} Red component. Should be in the [0..1] range, although there is no
-guarantees</p></div>
-</dd>
-</dl>
-<h3>Methods</h3>
-<dl>
-<dt id="PyXYZ.color.color.dot"><code class="name flex">
-<span>def <span class="ident">dot</span></span>(<span>self, c)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Computes the dot product of this color with another.
-If we try to do this operation with anything other than a color, it throws the
-InvalidColorOperationException.</p>
-<h2 id="arguments">Arguments</h2>
-<p>c {color} &ndash; Color to do the dot product with</p>
-<h2 id="returns">Returns</h2>
-<p>Number - Scalar value corresponding to the dot product of both colors</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def dot(self, c):
-    &#34;&#34;&#34;Computes the dot product of this color with another.
-    If we try to do this operation with anything other than a color, it throws the
-    InvalidColorOperationException.
-
-    Arguments:
-        c {color} -- Color to do the dot product with
-
-    Returns:
-        Number - Scalar value corresponding to the dot product of both colors
-    &#34;&#34;&#34;
-    if isinstance(c, color):
-        return self.r * c.r + self.g * c.g + self.b * c.b + self.a * c.a
-    else:
-        raise InvalidColorOperationException(&#34;dot&#34;, type(self), type(c))</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.magnitude"><code class="name flex">
-<span>def <span class="ident">magnitude</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the magnitude of the color.</p>
-<h2 id="returns">Returns</h2>
-<p>Number - Magnitude of the color as a 4D vector</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def magnitude(self):
-    &#34;&#34;&#34;Returns the magnitude of the color.
-
-    Returns:
-        Number - Magnitude of the color as a 4D vector
-    &#34;&#34;&#34;
-    return math.sqrt(self.dot(self))</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.normalize"><code class="name flex">
-<span>def <span class="ident">normalize</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Normalizes this color, as if it was a 4D vector.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def normalize(self):
-    &#34;&#34;&#34;Normalizes this color, as if it was a 4D vector.
-    &#34;&#34;&#34;
-    d = 1.0 / self.magnitude()
-    self.r *= d
-    self.g *= d
-    self.b *= d
-    self.a *= d</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.normalized"><code class="name flex">
-<span>def <span class="ident">normalized</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns the normalized version of this color, treating it as a 4D vector.</p>
-<h2 id="returns">Returns</h2>
-<p>Color - Normalized color</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def normalized(self):
-    &#34;&#34;&#34;Returns the normalized version of this color, treating it as a 4D vector.
-
-    Returns:
-        Color - Normalized color
-    &#34;&#34;&#34;
-    d = 1.0 / self.magnitude()
-    return color(self.r * d, self.g * d, self.b * d, self.a * d)</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.premult_alpha"><code class="name flex">
-<span>def <span class="ident">premult_alpha</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Multiplies the RGB components with the alpha component, for use with pre-multiplied
-alpha blend mode and returns this new color.</p>
-<h2 id="returns">Returns</h2>
-<p>Color - Premultiplied color</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def premult_alpha(self):
-    &#34;&#34;&#34;Multiplies the RGB components with the alpha component, for use with pre-multiplied
-    alpha blend mode and returns this new color.
-
-    Returns:
-        Color - Premultiplied color
-    &#34;&#34;&#34;
-    return color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.saturate"><code class="name flex">
-<span>def <span class="ident">saturate</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Clamps all the color components between the valid [0..1] range</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def saturate(self):
-    &#34;&#34;&#34;Clamps all the color components between the valid [0..1] range
-    &#34;&#34;&#34;
-    self.r = min(max(self.r, 0), 1)
-    self.g = min(max(self.g, 0), 1)
-    self.b = min(max(self.b, 0), 1)
-    self.a = min(max(self.a, 0), 1)</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.saturated"><code class="name flex">
-<span>def <span class="ident">saturated</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Returns a clamped version of this color</p>
-<h2 id="returns">Returns</h2>
-<p>Color - Clamped color</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def saturated(self):
-    &#34;&#34;&#34;Returns a clamped version of this color
-
-    Returns:
-        Color - Clamped color
-    &#34;&#34;&#34;
-    return color(
-        min(max(self.r, 0), 1),
-        min(max(self.g, 0), 1),
-        min(max(self.b, 0), 1),
-        min(max(self.a, 0), 1)
-    )</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.tuple3"><code class="name flex">
-<span>def <span class="ident">tuple3</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Converts a color to a 3-tuple, to be used with Pygame</p>
-<h2 id="returns">Returns</h2>
-<p>Tuple - (r * 255, g * 255, b * 255)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def tuple3(self):
-    &#34;&#34;&#34;Converts a color to a 3-tuple, to be used with Pygame
-
-    Returns:
-        Tuple - (r * 255, g * 255, b * 255)
-    &#34;&#34;&#34;
-    return (self.r * 255, self.g * 255, self.b * 255)</code></pre>
-</details>
-</dd>
-<dt id="PyXYZ.color.color.tuple4"><code class="name flex">
-<span>def <span class="ident">tuple4</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Converts a color to a 4-tuple, to be used with Pygame</p>
-<h2 id="returns">Returns</h2>
-<p>Tuple - (r * 255, g * 255, b * 255, a * 255)</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def tuple4(self):
-    &#34;&#34;&#34;Converts a color to a 4-tuple, to be used with Pygame
-
-    Returns:
-        Tuple - (r * 255, g * 255, b * 255, a * 255)
-    &#34;&#34;&#34;
-    return (self.r * 255, self.g * 255, self.b * 255, self.a * 255)</code></pre>
-</details>
-</dd>
-</dl>
 </dd>
 </dl>
 </section>
@@ -919,25 +919,25 @@ alpha blend mode and returns this new color.</p>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="PyXYZ.color.InvalidColorOperationException" href="#PyXYZ.color.InvalidColorOperationException">InvalidColorOperationException</a></code></h4>
+<h4><code><a title="PyXYZ.color.Color" href="#PyXYZ.color.Color">Color</a></code></h4>
+<ul class="two-column">
+<li><code><a title="PyXYZ.color.Color.a" href="#PyXYZ.color.Color.a">a</a></code></li>
+<li><code><a title="PyXYZ.color.Color.b" href="#PyXYZ.color.Color.b">b</a></code></li>
+<li><code><a title="PyXYZ.color.Color.dot" href="#PyXYZ.color.Color.dot">dot</a></code></li>
+<li><code><a title="PyXYZ.color.Color.g" href="#PyXYZ.color.Color.g">g</a></code></li>
+<li><code><a title="PyXYZ.color.Color.magnitude" href="#PyXYZ.color.Color.magnitude">magnitude</a></code></li>
+<li><code><a title="PyXYZ.color.Color.normalize" href="#PyXYZ.color.Color.normalize">normalize</a></code></li>
+<li><code><a title="PyXYZ.color.Color.normalized" href="#PyXYZ.color.Color.normalized">normalized</a></code></li>
+<li><code><a title="PyXYZ.color.Color.premult_alpha" href="#PyXYZ.color.Color.premult_alpha">premult_alpha</a></code></li>
+<li><code><a title="PyXYZ.color.Color.r" href="#PyXYZ.color.Color.r">r</a></code></li>
+<li><code><a title="PyXYZ.color.Color.saturate" href="#PyXYZ.color.Color.saturate">saturate</a></code></li>
+<li><code><a title="PyXYZ.color.Color.saturated" href="#PyXYZ.color.Color.saturated">saturated</a></code></li>
+<li><code><a title="PyXYZ.color.Color.tuple3" href="#PyXYZ.color.Color.tuple3">tuple3</a></code></li>
+<li><code><a title="PyXYZ.color.Color.tuple4" href="#PyXYZ.color.Color.tuple4">tuple4</a></code></li>
+</ul>
 </li>
 <li>
-<h4><code><a title="PyXYZ.color.color" href="#PyXYZ.color.color">color</a></code></h4>
-<ul class="two-column">
-<li><code><a title="PyXYZ.color.color.a" href="#PyXYZ.color.color.a">a</a></code></li>
-<li><code><a title="PyXYZ.color.color.b" href="#PyXYZ.color.color.b">b</a></code></li>
-<li><code><a title="PyXYZ.color.color.dot" href="#PyXYZ.color.color.dot">dot</a></code></li>
-<li><code><a title="PyXYZ.color.color.g" href="#PyXYZ.color.color.g">g</a></code></li>
-<li><code><a title="PyXYZ.color.color.magnitude" href="#PyXYZ.color.color.magnitude">magnitude</a></code></li>
-<li><code><a title="PyXYZ.color.color.normalize" href="#PyXYZ.color.color.normalize">normalize</a></code></li>
-<li><code><a title="PyXYZ.color.color.normalized" href="#PyXYZ.color.color.normalized">normalized</a></code></li>
-<li><code><a title="PyXYZ.color.color.premult_alpha" href="#PyXYZ.color.color.premult_alpha">premult_alpha</a></code></li>
-<li><code><a title="PyXYZ.color.color.r" href="#PyXYZ.color.color.r">r</a></code></li>
-<li><code><a title="PyXYZ.color.color.saturate" href="#PyXYZ.color.color.saturate">saturate</a></code></li>
-<li><code><a title="PyXYZ.color.color.saturated" href="#PyXYZ.color.color.saturated">saturated</a></code></li>
-<li><code><a title="PyXYZ.color.color.tuple3" href="#PyXYZ.color.color.tuple3">tuple3</a></code></li>
-<li><code><a title="PyXYZ.color.color.tuple4" href="#PyXYZ.color.color.tuple4">tuple4</a></code></li>
-</ul>
+<h4><code><a title="PyXYZ.color.InvalidColorOperationException" href="#PyXYZ.color.InvalidColorOperationException">InvalidColorOperationException</a></code></h4>
 </li>
 </ul>
 </li>

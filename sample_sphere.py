@@ -10,8 +10,8 @@ from object3d import Object3d
 from camera import Camera
 from mesh import Mesh
 from material import Material
-from color import color
-from vector3 import vector3
+from color import Color
+from vector3 import Vector3
 
 # Define a main function, just to keep things nice and tidy
 def main():
@@ -31,20 +31,20 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0, 0, 2)
+    scene.camera.position -= Vector3(0, 0, 2)
 
     # Create a sphere and place it in a scene, at position (0,0,0)
     obj1 = Object3d("TestObject")
-    obj1.scale = vector3(1, 1, 1)
-    obj1.position = vector3(0, 0, 0)
+    obj1.scale = Vector3(1, 1, 1)
+    obj1.position = Vector3(0, 0, 0)
     obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12)
-    obj1.material = Material(color(1, 0, 0, 1), "TestMaterial1")
+    obj1.material = Material(Color(1, 0, 0, 1), "TestMaterial1")
     scene.add_object(obj1)
 
     # Specify the rotation of the object. It will rotate 15 degrees around the axis given,
     # every second
     angle = 15
-    axis = vector3(1, 0.7, 0.2)
+    axis = Vector3(1, 0.7, 0.2)
     axis.normalize()
 
     # Timer

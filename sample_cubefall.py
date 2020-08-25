@@ -10,8 +10,8 @@ from object3d import Object3d
 from camera import Camera
 from mesh import Mesh
 from material import Material
-from color import color
-from vector3 import vector3
+from color import Color
+from vector3 import Vector3
 
 GRAVITY = -9.8
 
@@ -20,17 +20,17 @@ class FallingCube(Object3d):
     def __init__(self, mesh):
         super().__init__("FallingCube")
         # Create a cube on a random positions
-        self.position = vector3(random.uniform(-6, 6), random.uniform(6, 10), random.uniform(3, 10))
+        self.position = Vector3(random.uniform(-6, 6), random.uniform(6, 10), random.uniform(3, 10))
         self.mesh = mesh
-        # Pick a random color for the cube
-        self.material = Material(color(random.uniform(0.1, 1),
+        # Pick a random Color for the cube
+        self.material = Material(Color(random.uniform(0.1, 1),
                                        random.uniform(0.1, 1),
                                        random.uniform(0.1, 1), 1),
                                  "FallingCubeMaterial")
         # Starting velocity is zero
         self.velocity = 0
         # Select a random rotation axis
-        self.rotation_axis = vector3(random.uniform(-1, 1),
+        self.rotation_axis = Vector3(random.uniform(-1, 1),
                                      random.uniform(-1, 1),
                                      random.uniform(-1, 1)).normalized()
         # Select a random rotation speed
@@ -61,7 +61,7 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0, 0, 2)
+    scene.camera.position -= Vector3(0, 0, 2)
 
     # Create the cube mesh we're going to use for every single object
     cube_mesh = Mesh.create_cube((1, 1, 1))

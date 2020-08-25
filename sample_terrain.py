@@ -10,8 +10,8 @@ from object3d import Object3d
 from camera import Camera
 from mesh import Mesh
 from material import Material
-from color import color
-from vector3 import vector3, dot_product, cross_product
+from color import Color
+from vector3 import Vector3, dot_product, cross_product
 from perlin import noise2d
 
 def sample_height(x, y):
@@ -49,7 +49,7 @@ def create_terrain():
     pz = size_z / div
 
     # For centering the terrain on the object center
-    origin = vector3(-size_x * 0.5, 0, -size_z * 0.5)
+    origin = Vector3(-size_x * 0.5, 0, -size_z * 0.5)
 
     # Create the meshes for each type of terrain
     grass_mesh = Mesh("Terrain_Grass")
@@ -59,10 +59,10 @@ def create_terrain():
 
     for dz in range(0, div):
         for dx in range(0, div):
-            p1 = vector3(dx * px, 0, dz * pz) + origin
-            p2 = vector3((dx + 1) * px, 0, dz * pz) + origin
-            p3 = vector3((dx + 1) * px, 0, (dz + 1) * pz) + origin
-            p4 = vector3(dx * px, 0, (dz + 1) * pz) + origin
+            p1 = Vector3(dx * px, 0, dz * pz) + origin
+            p2 = Vector3((dx + 1) * px, 0, dz * pz) + origin
+            p3 = Vector3((dx + 1) * px, 0, (dz + 1) * pz) + origin
+            p4 = Vector3(dx * px, 0, (dz + 1) * pz) + origin
 
             p1.y = sample_height(p1.x, p1.z)
             p2.y = sample_height(p2.x, p2.z)
@@ -94,16 +94,16 @@ def create_terrain():
                 else:
                     # Check for cliff face, check the normal
                     normal = cross_product((p3 - p1).normalized(), (p2 - p1).normalized())
-                    if dot_product(normal, vector3(0, 1, 0)) < 0.5:
+                    if dot_product(normal, Vector3(0, 1, 0)) < 0.5:
                         cliff_mesh.polygons.append(poly)
                     else:
                         grass_mesh.polygons.append(poly)
 
     # Create materials for the terrain
-    grass_material = Material(color(0.1, 0.6, 0.1, 1), "GrassMaterial")
-    snow_material = Material(color(0.8, 0.8, 0.8, 1), "SnowMaterial")
-    cliff_material = Material(color(0.4, 0.4, 0.4, 1), "CliffMaterial")
-    water_material = Material(color(0, 0.5, 0.7, 1), "WaterMaterial")
+    grass_material = Material(Color(0.1, 0.6, 0.1, 1), "GrassMaterial")
+    snow_material = Material(Color(0.8, 0.8, 0.8, 1), "SnowMaterial")
+    cliff_material = Material(Color(0.4, 0.4, 0.4, 1), "CliffMaterial")
+    water_material = Material(Color(0, 0.5, 0.7, 1), "WaterMaterial")
 
     # Return meshes and materials
     meshes = [grass_mesh, snow_mesh, cliff_mesh, water_mesh]
@@ -129,22 +129,22 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= vector3(0, 0, 4)
-    scene.camera.rotation = from_rotation_vector((vector3(1, 0, 0) * math.radians(-15)).to_np3())
+    scene.camera.position -= Vector3(0, 0, 4)
+    scene.camera.rotation = from_rotation_vector((Vector3(1, 0, 0) * math.radians(-15)).to_np3())
 
     # Creates the terrain meshes and materials
     terrain_meshes, terrain_materials = create_terrain()
 
     # Create container object for all the terrain sub-objects
     master_object = Object3d("TerrainObject")
-    master_object.position = vector3(0, -1, 0)
+    master_object.position = Vector3(0, -1, 0)
     scene.add_object(master_object)
 
     # Create the terrain objects and place it in a scene, at position (0,0,0)
     for _, (mesh, material) in enumerate(zip(terrain_meshes, terrain_materials)):
         obj = Object3d("TerrainObject")
-        obj.scale = vector3(1, 1, 1)
-        obj.position = vector3(0, 0, 0)
+        obj.scale = Vector3(1, 1, 1)
+        obj.position = Vector3(0, 0, 0)
         obj.mesh = mesh
         obj.material = material
         master_object.add_child(obj)
@@ -152,7 +152,7 @@ def main():
     # Specify the rotation of the object. It will rotate 15 degrees around the axis given,
     # every second
     angle = 15
-    axis = vector3(0, 1, 0)
+    axis = Vector3(0, 1, 0)
     axis.normalize()
 
     # Timer

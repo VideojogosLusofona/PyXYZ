@@ -30,7 +30,7 @@
 <pre><code class="python">&#34;&#34;&#34;Mesh class definition&#34;&#34;&#34;
 import math
 import pygame
-from vector3 import vector3
+from vector3 import Vector3
 
 class Mesh:
     &#34;&#34;&#34;Mesh class.
@@ -55,7 +55,7 @@ class Mesh:
         self.name = name
         &#34;&#34;&#34; {str} Name of the mesh&#34;&#34;&#34;
         self.polygons = []
-        &#34;&#34;&#34; {list[list[vector3]]} List of lists of polygons. A polygon is a closed shape,
+        &#34;&#34;&#34; {list[list[Vector3]]} List of lists of polygons. A polygon is a closed shape,
         hence the need for a list of lists, if we want more complex shapes.&#34;&#34;&#34;
 
     def offset(self, v):
@@ -64,7 +64,7 @@ class Mesh:
 
         Arguments:
 
-            v {vector3} -- Ammount to displace the mesh
+            v {Vector3} -- Ammount to displace the mesh
         &#34;&#34;&#34;
         new_polys = []
         for poly in self.polygons:
@@ -92,8 +92,8 @@ class Mesh:
             render times, but it is normally commented out, for performance reasons. If you want
             to use the statistics, uncomment the code on this funtion.
         &#34;&#34;&#34;
-        # Convert color to the pygame format
-        c = material.color.tuple3()
+        # Convert Color to the pygame format
+        c = material.Color.tuple3()
 
         # For all polygons
         for poly in self.polygons:
@@ -146,26 +146,26 @@ class Mesh:
             mesh = Mesh(&#34;UnknownCube&#34;)
 
         # Add the 6 quads that create a cube
-        Mesh.create_quad(vector3(size[0] * 0.5, 0, 0),
-                         vector3(0, -size[1] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
-        Mesh.create_quad(vector3(-size[0] * 0.5, 0, 0),
-                         vector3(0, size[1] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(size[0] * 0.5, 0, 0),
+                         Vector3(0, -size[1] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(-size[0] * 0.5, 0, 0),
+                         Vector3(0, size[1] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
 
-        Mesh.create_quad(vector3(0, size[1] * 0.5, 0),
-                         vector3(size[0] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
-        Mesh.create_quad(vector3(0, -size[1] * 0.5, 0),
-                         vector3(-size[0] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(0, size[1] * 0.5, 0),
+                         Vector3(size[0] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(0, -size[1] * 0.5, 0),
+                         Vector3(-size[0] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
 
-        Mesh.create_quad(vector3(0, 0, size[2] * 0.5),
-                         vector3(-size[0] * 0.5, 0),
-                         vector3(0, size[1] * 0.5, 0), mesh)
-        Mesh.create_quad(vector3(0, 0, -size[2] * 0.5),
-                         vector3(size[0] * 0.5, 0),
-                         vector3(0, size[1] * 0.5, 0), mesh)
+        Mesh.create_quad(Vector3(0, 0, size[2] * 0.5),
+                         Vector3(-size[0] * 0.5, 0),
+                         Vector3(0, size[1] * 0.5, 0), mesh)
+        Mesh.create_quad(Vector3(0, 0, -size[2] * 0.5),
+                         Vector3(size[0] * 0.5, 0),
+                         Vector3(0, size[1] * 0.5, 0), mesh)
 
         return mesh
 
@@ -196,15 +196,15 @@ class Mesh:
             mesh = Mesh(&#34;UnknownSphere&#34;)
 
         # Compute half-size
-        if isinstance(size, vector3):
+        if isinstance(size, Vector3):
             hs = size * 0.5
         else:
-            hs = vector3(size[0], size[1], size[2]) * 0.5
+            hs = Vector3(size[0], size[1], size[2]) * 0.5
 
         # Sphere is going to be composed by quads in most of the surface, but triangles near the
         # poles, so compute the bottom and top vertex
-        bottom_vertex = vector3(0, -hs.y, 0)
-        top_vertex = vector3(0, hs.y, 0)
+        bottom_vertex = Vector3(0, -hs.y, 0)
+        top_vertex = Vector3(0, hs.y, 0)
 
         lat_inc = math.pi / res_lat
         lon_inc = math.pi * 2 / res_lon
@@ -215,8 +215,8 @@ class Mesh:
         y = hs.y * math.sin(lat + lat_inc)
         c = math.cos(lat + lat_inc)
         for _ in range(0, res_lon):
-            p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-            p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+            p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+            p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
             Mesh.create_tri(bottom_vertex, p1, p2, mesh)
 
@@ -233,16 +233,16 @@ class Mesh:
 
             lon = 0
             for _ in range(0, res_lon):
-                p1 = vector3(c1 * math.cos(lon) * hs.x,
+                p1 = Vector3(c1 * math.cos(lon) * hs.x,
                              y1,
                              c1 * math.sin(lon) * hs.z)
-                p2 = vector3(c1 * math.cos(lon + lon_inc) * hs.x,
+                p2 = Vector3(c1 * math.cos(lon + lon_inc) * hs.x,
                              y1,
                              c1 * math.sin(lon + lon_inc) * hs.z)
-                p3 = vector3(c2 * math.cos(lon) * hs.x,
+                p3 = Vector3(c2 * math.cos(lon) * hs.x,
                              y2,
                              c2 * math.sin(lon) * hs.z)
-                p4 = vector3(c2 * math.cos(lon + lon_inc) * hs.x,
+                p4 = Vector3(c2 * math.cos(lon + lon_inc) * hs.x,
                              y2,
                              c2 * math.sin(lon + lon_inc) * hs.z)
 
@@ -261,8 +261,8 @@ class Mesh:
         y = hs.y * math.sin(lat)
         c = math.cos(lat)
         for _ in range(0, res_lon):
-            p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-            p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+            p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+            p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
             Mesh.create_tri(top_vertex, p1, p2, mesh)
 
@@ -279,12 +279,12 @@ class Mesh:
 
         Arguments:
 
-            origin {vector3} -- Center of the quad
+            origin {Vector3} -- Center of the quad
 
-            axis0 {vector3} -- One of the axis of the quad. This is not normalized, since the
+            axis0 {Vector3} -- One of the axis of the quad. This is not normalized, since the
             length specifies half the length of that side along that axis
 
-            axis1 {vector3} -- One of the axis of the quad. This is not normalized, since the
+            axis1 {Vector3} -- One of the axis of the quad. This is not normalized, since the
             length specifies half the length of that side along that axis
 
             mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
@@ -313,11 +313,11 @@ class Mesh:
 
         Arguments:
 
-            p1 {vector3} -- First vertex of the triangle
+            p1 {Vector3} -- First vertex of the triangle
 
-            p2 {vector3} -- Second vertex of the triangle
+            p2 {Vector3} -- Second vertex of the triangle
 
-            p3 {vector3} -- Third vertex of the triangle
+            p3 {Vector3} -- Third vertex of the triangle
 
             mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
 
@@ -382,7 +382,7 @@ Stores a list of polygons to be drawn</p>
         self.name = name
         &#34;&#34;&#34; {str} Name of the mesh&#34;&#34;&#34;
         self.polygons = []
-        &#34;&#34;&#34; {list[list[vector3]]} List of lists of polygons. A polygon is a closed shape,
+        &#34;&#34;&#34; {list[list[Vector3]]} List of lists of polygons. A polygon is a closed shape,
         hence the need for a list of lists, if we want more complex shapes.&#34;&#34;&#34;
 
     def offset(self, v):
@@ -391,7 +391,7 @@ Stores a list of polygons to be drawn</p>
 
         Arguments:
 
-            v {vector3} -- Ammount to displace the mesh
+            v {Vector3} -- Ammount to displace the mesh
         &#34;&#34;&#34;
         new_polys = []
         for poly in self.polygons:
@@ -419,8 +419,8 @@ Stores a list of polygons to be drawn</p>
             render times, but it is normally commented out, for performance reasons. If you want
             to use the statistics, uncomment the code on this funtion.
         &#34;&#34;&#34;
-        # Convert color to the pygame format
-        c = material.color.tuple3()
+        # Convert Color to the pygame format
+        c = material.Color.tuple3()
 
         # For all polygons
         for poly in self.polygons:
@@ -473,26 +473,26 @@ Stores a list of polygons to be drawn</p>
             mesh = Mesh(&#34;UnknownCube&#34;)
 
         # Add the 6 quads that create a cube
-        Mesh.create_quad(vector3(size[0] * 0.5, 0, 0),
-                         vector3(0, -size[1] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
-        Mesh.create_quad(vector3(-size[0] * 0.5, 0, 0),
-                         vector3(0, size[1] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(size[0] * 0.5, 0, 0),
+                         Vector3(0, -size[1] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(-size[0] * 0.5, 0, 0),
+                         Vector3(0, size[1] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
 
-        Mesh.create_quad(vector3(0, size[1] * 0.5, 0),
-                         vector3(size[0] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
-        Mesh.create_quad(vector3(0, -size[1] * 0.5, 0),
-                         vector3(-size[0] * 0.5, 0),
-                         vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(0, size[1] * 0.5, 0),
+                         Vector3(size[0] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
+        Mesh.create_quad(Vector3(0, -size[1] * 0.5, 0),
+                         Vector3(-size[0] * 0.5, 0),
+                         Vector3(0, 0, size[2] * 0.5), mesh)
 
-        Mesh.create_quad(vector3(0, 0, size[2] * 0.5),
-                         vector3(-size[0] * 0.5, 0),
-                         vector3(0, size[1] * 0.5, 0), mesh)
-        Mesh.create_quad(vector3(0, 0, -size[2] * 0.5),
-                         vector3(size[0] * 0.5, 0),
-                         vector3(0, size[1] * 0.5, 0), mesh)
+        Mesh.create_quad(Vector3(0, 0, size[2] * 0.5),
+                         Vector3(-size[0] * 0.5, 0),
+                         Vector3(0, size[1] * 0.5, 0), mesh)
+        Mesh.create_quad(Vector3(0, 0, -size[2] * 0.5),
+                         Vector3(size[0] * 0.5, 0),
+                         Vector3(0, size[1] * 0.5, 0), mesh)
 
         return mesh
 
@@ -523,15 +523,15 @@ Stores a list of polygons to be drawn</p>
             mesh = Mesh(&#34;UnknownSphere&#34;)
 
         # Compute half-size
-        if isinstance(size, vector3):
+        if isinstance(size, Vector3):
             hs = size * 0.5
         else:
-            hs = vector3(size[0], size[1], size[2]) * 0.5
+            hs = Vector3(size[0], size[1], size[2]) * 0.5
 
         # Sphere is going to be composed by quads in most of the surface, but triangles near the
         # poles, so compute the bottom and top vertex
-        bottom_vertex = vector3(0, -hs.y, 0)
-        top_vertex = vector3(0, hs.y, 0)
+        bottom_vertex = Vector3(0, -hs.y, 0)
+        top_vertex = Vector3(0, hs.y, 0)
 
         lat_inc = math.pi / res_lat
         lon_inc = math.pi * 2 / res_lon
@@ -542,8 +542,8 @@ Stores a list of polygons to be drawn</p>
         y = hs.y * math.sin(lat + lat_inc)
         c = math.cos(lat + lat_inc)
         for _ in range(0, res_lon):
-            p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-            p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+            p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+            p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
             Mesh.create_tri(bottom_vertex, p1, p2, mesh)
 
@@ -560,16 +560,16 @@ Stores a list of polygons to be drawn</p>
 
             lon = 0
             for _ in range(0, res_lon):
-                p1 = vector3(c1 * math.cos(lon) * hs.x,
+                p1 = Vector3(c1 * math.cos(lon) * hs.x,
                              y1,
                              c1 * math.sin(lon) * hs.z)
-                p2 = vector3(c1 * math.cos(lon + lon_inc) * hs.x,
+                p2 = Vector3(c1 * math.cos(lon + lon_inc) * hs.x,
                              y1,
                              c1 * math.sin(lon + lon_inc) * hs.z)
-                p3 = vector3(c2 * math.cos(lon) * hs.x,
+                p3 = Vector3(c2 * math.cos(lon) * hs.x,
                              y2,
                              c2 * math.sin(lon) * hs.z)
-                p4 = vector3(c2 * math.cos(lon + lon_inc) * hs.x,
+                p4 = Vector3(c2 * math.cos(lon + lon_inc) * hs.x,
                              y2,
                              c2 * math.sin(lon + lon_inc) * hs.z)
 
@@ -588,8 +588,8 @@ Stores a list of polygons to be drawn</p>
         y = hs.y * math.sin(lat)
         c = math.cos(lat)
         for _ in range(0, res_lon):
-            p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-            p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+            p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+            p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
             Mesh.create_tri(top_vertex, p1, p2, mesh)
 
@@ -606,12 +606,12 @@ Stores a list of polygons to be drawn</p>
 
         Arguments:
 
-            origin {vector3} -- Center of the quad
+            origin {Vector3} -- Center of the quad
 
-            axis0 {vector3} -- One of the axis of the quad. This is not normalized, since the
+            axis0 {Vector3} -- One of the axis of the quad. This is not normalized, since the
             length specifies half the length of that side along that axis
 
-            axis1 {vector3} -- One of the axis of the quad. This is not normalized, since the
+            axis1 {Vector3} -- One of the axis of the quad. This is not normalized, since the
             length specifies half the length of that side along that axis
 
             mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
@@ -640,11 +640,11 @@ Stores a list of polygons to be drawn</p>
 
         Arguments:
 
-            p1 {vector3} -- First vertex of the triangle
+            p1 {Vector3} -- First vertex of the triangle
 
-            p2 {vector3} -- Second vertex of the triangle
+            p2 {Vector3} -- Second vertex of the triangle
 
-            p3 {vector3} -- Third vertex of the triangle
+            p3 {Vector3} -- Third vertex of the triangle
 
             mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
 
@@ -721,26 +721,26 @@ def create_cube(size, mesh=None):
         mesh = Mesh(&#34;UnknownCube&#34;)
 
     # Add the 6 quads that create a cube
-    Mesh.create_quad(vector3(size[0] * 0.5, 0, 0),
-                     vector3(0, -size[1] * 0.5, 0),
-                     vector3(0, 0, size[2] * 0.5), mesh)
-    Mesh.create_quad(vector3(-size[0] * 0.5, 0, 0),
-                     vector3(0, size[1] * 0.5, 0),
-                     vector3(0, 0, size[2] * 0.5), mesh)
+    Mesh.create_quad(Vector3(size[0] * 0.5, 0, 0),
+                     Vector3(0, -size[1] * 0.5, 0),
+                     Vector3(0, 0, size[2] * 0.5), mesh)
+    Mesh.create_quad(Vector3(-size[0] * 0.5, 0, 0),
+                     Vector3(0, size[1] * 0.5, 0),
+                     Vector3(0, 0, size[2] * 0.5), mesh)
 
-    Mesh.create_quad(vector3(0, size[1] * 0.5, 0),
-                     vector3(size[0] * 0.5, 0),
-                     vector3(0, 0, size[2] * 0.5), mesh)
-    Mesh.create_quad(vector3(0, -size[1] * 0.5, 0),
-                     vector3(-size[0] * 0.5, 0),
-                     vector3(0, 0, size[2] * 0.5), mesh)
+    Mesh.create_quad(Vector3(0, size[1] * 0.5, 0),
+                     Vector3(size[0] * 0.5, 0),
+                     Vector3(0, 0, size[2] * 0.5), mesh)
+    Mesh.create_quad(Vector3(0, -size[1] * 0.5, 0),
+                     Vector3(-size[0] * 0.5, 0),
+                     Vector3(0, 0, size[2] * 0.5), mesh)
 
-    Mesh.create_quad(vector3(0, 0, size[2] * 0.5),
-                     vector3(-size[0] * 0.5, 0),
-                     vector3(0, size[1] * 0.5, 0), mesh)
-    Mesh.create_quad(vector3(0, 0, -size[2] * 0.5),
-                     vector3(size[0] * 0.5, 0),
-                     vector3(0, size[1] * 0.5, 0), mesh)
+    Mesh.create_quad(Vector3(0, 0, size[2] * 0.5),
+                     Vector3(-size[0] * 0.5, 0),
+                     Vector3(0, size[1] * 0.5, 0), mesh)
+    Mesh.create_quad(Vector3(0, 0, -size[2] * 0.5),
+                     Vector3(size[0] * 0.5, 0),
+                     Vector3(0, size[1] * 0.5, 0), mesh)
 
     return mesh</code></pre>
 </details>
@@ -752,10 +752,10 @@ def create_cube(size, mesh=None):
 <div class="desc"><p>Adds the vertices necessary to create a quad (4 sided coplanar rectangle).
 If a source mesh is not given, a new mesh is created.</p>
 <h2 id="arguments">Arguments</h2>
-<p>origin {vector3} &ndash; Center of the quad</p>
-<p>axis0 {vector3} &ndash; One of the axis of the quad. This is not normalized, since the
+<p>origin {Vector3} &ndash; Center of the quad</p>
+<p>axis0 {Vector3} &ndash; One of the axis of the quad. This is not normalized, since the
 length specifies half the length of that side along that axis</p>
-<p>axis1 {vector3} &ndash; One of the axis of the quad. This is not normalized, since the
+<p>axis1 {Vector3} &ndash; One of the axis of the quad. This is not normalized, since the
 length specifies half the length of that side along that axis</p>
 <p>mesh {Mesh} &ndash; Mesh to add the polygons. If not given, create a new mesh</p>
 <h2 id="returns">Returns</h2>
@@ -772,12 +772,12 @@ def create_quad(origin, axis0, axis1, mesh):
 
     Arguments:
 
-        origin {vector3} -- Center of the quad
+        origin {Vector3} -- Center of the quad
 
-        axis0 {vector3} -- One of the axis of the quad. This is not normalized, since the
+        axis0 {Vector3} -- One of the axis of the quad. This is not normalized, since the
         length specifies half the length of that side along that axis
 
-        axis1 {vector3} -- One of the axis of the quad. This is not normalized, since the
+        axis1 {Vector3} -- One of the axis of the quad. This is not normalized, since the
         length specifies half the length of that side along that axis
 
         mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
@@ -846,15 +846,15 @@ def create_sphere(size, res_lat, res_lon, mesh=None):
         mesh = Mesh(&#34;UnknownSphere&#34;)
 
     # Compute half-size
-    if isinstance(size, vector3):
+    if isinstance(size, Vector3):
         hs = size * 0.5
     else:
-        hs = vector3(size[0], size[1], size[2]) * 0.5
+        hs = Vector3(size[0], size[1], size[2]) * 0.5
 
     # Sphere is going to be composed by quads in most of the surface, but triangles near the
     # poles, so compute the bottom and top vertex
-    bottom_vertex = vector3(0, -hs.y, 0)
-    top_vertex = vector3(0, hs.y, 0)
+    bottom_vertex = Vector3(0, -hs.y, 0)
+    top_vertex = Vector3(0, hs.y, 0)
 
     lat_inc = math.pi / res_lat
     lon_inc = math.pi * 2 / res_lon
@@ -865,8 +865,8 @@ def create_sphere(size, res_lat, res_lon, mesh=None):
     y = hs.y * math.sin(lat + lat_inc)
     c = math.cos(lat + lat_inc)
     for _ in range(0, res_lon):
-        p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-        p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+        p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+        p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
         Mesh.create_tri(bottom_vertex, p1, p2, mesh)
 
@@ -883,16 +883,16 @@ def create_sphere(size, res_lat, res_lon, mesh=None):
 
         lon = 0
         for _ in range(0, res_lon):
-            p1 = vector3(c1 * math.cos(lon) * hs.x,
+            p1 = Vector3(c1 * math.cos(lon) * hs.x,
                          y1,
                          c1 * math.sin(lon) * hs.z)
-            p2 = vector3(c1 * math.cos(lon + lon_inc) * hs.x,
+            p2 = Vector3(c1 * math.cos(lon + lon_inc) * hs.x,
                          y1,
                          c1 * math.sin(lon + lon_inc) * hs.z)
-            p3 = vector3(c2 * math.cos(lon) * hs.x,
+            p3 = Vector3(c2 * math.cos(lon) * hs.x,
                          y2,
                          c2 * math.sin(lon) * hs.z)
-            p4 = vector3(c2 * math.cos(lon + lon_inc) * hs.x,
+            p4 = Vector3(c2 * math.cos(lon + lon_inc) * hs.x,
                          y2,
                          c2 * math.sin(lon + lon_inc) * hs.z)
 
@@ -911,8 +911,8 @@ def create_sphere(size, res_lat, res_lon, mesh=None):
     y = hs.y * math.sin(lat)
     c = math.cos(lat)
     for _ in range(0, res_lon):
-        p1 = vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
-        p2 = vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
+        p1 = Vector3(c * math.cos(lon) * hs.x, y, c * math.sin(lon) * hs.z)
+        p2 = Vector3(c * math.cos(lon + lon_inc) * hs.x, y, c * math.sin(lon + lon_inc) * hs.z)
 
         Mesh.create_tri(top_vertex, p1, p2, mesh)
 
@@ -928,9 +928,9 @@ def create_sphere(size, res_lat, res_lon, mesh=None):
 <div class="desc"><p>Adds the vertices necessary to create a triangle
 If a source mesh is not given, a new mesh is created.</p>
 <h2 id="arguments">Arguments</h2>
-<p>p1 {vector3} &ndash; First vertex of the triangle</p>
-<p>p2 {vector3} &ndash; Second vertex of the triangle</p>
-<p>p3 {vector3} &ndash; Third vertex of the triangle</p>
+<p>p1 {Vector3} &ndash; First vertex of the triangle</p>
+<p>p2 {Vector3} &ndash; Second vertex of the triangle</p>
+<p>p3 {Vector3} &ndash; Third vertex of the triangle</p>
 <p>mesh {Mesh} &ndash; Mesh to add the polygons. If not given, create a new mesh</p>
 <h2 id="returns">Returns</h2>
 <p>{Mesh} - Mesh where the polygons were added</p></div>
@@ -946,11 +946,11 @@ def create_tri(p1, p2, p3, mesh):
 
     Arguments:
 
-        p1 {vector3} -- First vertex of the triangle
+        p1 {Vector3} -- First vertex of the triangle
 
-        p2 {vector3} -- Second vertex of the triangle
+        p2 {Vector3} -- Second vertex of the triangle
 
-        p3 {vector3} -- Third vertex of the triangle
+        p3 {Vector3} -- Third vertex of the triangle
 
         mesh {Mesh} -- Mesh to add the polygons. If not given, create a new mesh
 
@@ -979,7 +979,7 @@ def create_tri(p1, p2, p3, mesh):
 </dd>
 <dt id="PyXYZ.mesh.Mesh.polygons"><code class="name">var <span class="ident">polygons</span></code></dt>
 <dd>
-<div class="desc"><p>{list[list[vector3]]} List of lists of polygons. A polygon is a closed shape,
+<div class="desc"><p>{list[list[Vector3]]} List of lists of polygons. A polygon is a closed shape,
 hence the need for a list of lists, if we want more complex shapes.</p></div>
 </dd>
 </dl>
@@ -991,7 +991,7 @@ hence the need for a list of lists, if we want more complex shapes.</p></div>
 <dd>
 <div class="desc"><p>Offsets this mesh by a given vector. In practice, adds v to all vertex in all polygons</p>
 <h2 id="arguments">Arguments</h2>
-<p>v {vector3} &ndash; Ammount to displace the mesh</p></div>
+<p>v {Vector3} &ndash; Ammount to displace the mesh</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1002,7 +1002,7 @@ hence the need for a list of lists, if we want more complex shapes.</p></div>
 
     Arguments:
 
-        v {vector3} -- Ammount to displace the mesh
+        v {Vector3} -- Ammount to displace the mesh
     &#34;&#34;&#34;
     new_polys = []
     for poly in self.polygons:
@@ -1048,8 +1048,8 @@ to use the statistics, uncomment the code on this funtion.</p></div>
         render times, but it is normally commented out, for performance reasons. If you want
         to use the statistics, uncomment the code on this funtion.
     &#34;&#34;&#34;
-    # Convert color to the pygame format
-    c = material.color.tuple3()
+    # Convert Color to the pygame format
+    c = material.Color.tuple3()
 
     # For all polygons
     for poly in self.polygons:

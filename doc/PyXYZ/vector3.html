@@ -43,7 +43,7 @@ class InvalidOperationException(Exception):
         &#34;&#34;&#34;Returns a readable version of the exception&#34;&#34;&#34;
         return f&#34;Invalid operation ({self.op}) between {self.type1} and {self.type2}!&#34;
 
-class vector3:
+class Vector3:
     &#34;&#34;&#34;3d vector class.
     It stores XYZ values as floats.&#34;&#34;&#34;
 
@@ -71,39 +71,39 @@ class vector3:
         return &#34;(&#34; + str(self.x) + &#34;,&#34; + str(self.y) + &#34;,&#34; + str(self.z) + &#34;)&#34;
 
     def __add__(self, v):
-        &#34;&#34;&#34;Adds this vector3 to another.
-        If we try to add anything other than a vector3 to it, it throws the
+        &#34;&#34;&#34;Adds this Vector3 to another.
+        If we try to add anything other than a Vector3 to it, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to add
+            v {Vector3} -- Vector to add
 
         Returns:
-            vector3 - Sum of this vector3 and the given one
+            Vector3 - Sum of this Vector3 and the given one
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.x + v.x, self.y + v.y, self.z + v.z)
+        if isinstance(v, Vector3):
+            return Vector3(self.x + v.x, self.y + v.y, self.z + v.z)
         else:
             raise InvalidOperationException(&#34;add&#34;, type(self), type(v))
 
     def __sub__(self, v):
-        &#34;&#34;&#34;Subtracts a vector3 from this one.
-        If we try to subtract anything other than a vector3, it throws the
+        &#34;&#34;&#34;Subtracts a Vector3 from this one.
+        If we try to subtract anything other than a Vector3, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to subtract
+            v {Vector3} -- Vector to subtract
 
         Returns:
-            vector3 - Subraction of the given vector from this one
+            Vector3 - Subraction of the given vector from this one
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.x - v.x, self.y - v.y, self.z - v.z)
+        if isinstance(v, Vector3):
+            return Vector3(self.x - v.x, self.y - v.y, self.z - v.z)
         else:
             raise InvalidOperationException(&#34;sub&#34;, type(self), type(v))
 
     def __mul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
         InvalidOperationException.
 
@@ -112,15 +112,15 @@ class vector3:
             multiplied by this number
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x * v, self.y * v, self.z * v)
+            return Vector3(self.x * v, self.y * v, self.z * v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __rmul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
@@ -128,88 +128,88 @@ class vector3:
             this number
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x * v, self.y * v, self.z * v)
+            return Vector3(self.x * v, self.y * v, self.z * v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __truediv__(self, v):
-        &#34;&#34;&#34;Divides this vector3 by a scalar.
+        &#34;&#34;&#34;Divides this Vector3 by a scalar.
         If we try to divide anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
 
         Returns:
-            vector3 - Division of the vector3
+            Vector3 - Division of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x / v, self.y / v, self.z / v)
+            return Vector3(self.x / v, self.y / v, self.z / v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __eq__(self, v):
-        &#34;&#34;&#34;Checks if this vector3 is equal to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Vector3 is equal to the given one, with a tolerance of 0.0001.
         Exception InvalidOperationException is thrown if we compare something other than a
-        vector3.
+        Vector3.
 
         Arguments:
-            v {vector3} -- Vector to compare
+            v {Vector3} -- Vector to compare
 
         Returns:
             Bool - True if the vectors are the same, false otherwise
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return ((self - v).magnitude()) &lt; 0.0001
         else:
             raise InvalidOperationException(&#34;eq&#34;, type(self), type(v))
 
     def __ne__(self, v):
-        &#34;&#34;&#34;Checks if this vector3 is different to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Vector3 is different to the given one, with a tolerance of 0.0001.
         Exception InvalidOperationException is thrown if we compare something other than a
-        vector3.
+        Vector3.
 
         Arguments:
-            v {vector3} -- Vector to compare
+            v {Vector3} -- Vector to compare
 
         Returns:
             Bool - True if the vectors are different, false otherwise
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return ((self - v).magnitude()) &gt; 0.0001
         else:
             raise InvalidOperationException(&#34;neq&#34;, type(self), type(v))
 
     def __isub__(self, v):
-        &#34;&#34;&#34;Subtracts a vector3 from this one.
-        If we try to subtract anything other than a vector3, it throws the
+        &#34;&#34;&#34;Subtracts a Vector3 from this one.
+        If we try to subtract anything other than a Vector3, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to subtract
+            v {Vector3} -- Vector to subtract
 
         Returns:
-            vector3 - Subraction of the given vector from this one
+            Vector3 - Subraction of the given vector from this one
         &#34;&#34;&#34;
         return self - v
 
     def __iadd__(self, v):
-        &#34;&#34;&#34;Adds this vector3 to another.
-        If we try to add anything other than a vector3 to it, it throws the
+        &#34;&#34;&#34;Adds this Vector3 to another.
+        If we try to add anything other than a Vector3 to it, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to add
+            v {Vector3} -- Vector to add
 
         Returns:
-            vector3 - Sum of this vector3 and the given one
+            Vector3 - Sum of this Vector3 and the given one
         &#34;&#34;&#34;
         return self + v
 
     def __imul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
         InvalidOperationException.
 
@@ -218,32 +218,32 @@ class vector3:
             multiplied by this number.
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         return self * v
 
     def __idiv__(self, v):
-        &#34;&#34;&#34;Divides this vector3 by a scalar.
+        &#34;&#34;&#34;Divides this Vector3 by a scalar.
         If we try to divide anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
 
         Returns:
-            vector3 - Division of the vector3
+            Vector3 - Division of the Vector3
         &#34;&#34;&#34;
         return self / v
 
     def __neg__(self):
-        &#34;&#34;&#34;Negates this vector3, component-wise. Equivelent to multiplying by (-1)
+        &#34;&#34;&#34;Negates this Vector3, component-wise. Equivelent to multiplying by (-1)
 
         Returns:
-            vector3 - Negated vector3
+            Vector3 - Negated Vector3
         &#34;&#34;&#34;
-        return vector3(-self.x, -self.y, -self.z)
+        return Vector3(-self.x, -self.y, -self.z)
 
     def magnitude(self):
-        &#34;&#34;&#34;Returns the magnitude of the vector3.
+        &#34;&#34;&#34;Returns the magnitude of the Vector3.
 
         Returns:
             Number - Magnitude of the vector
@@ -251,7 +251,7 @@ class vector3:
         return math.sqrt(self.dot(self))
 
     def magnitude_squared(self):
-        &#34;&#34;&#34;Returns the squared magnitude of the vector3.
+        &#34;&#34;&#34;Returns the squared magnitude of the Vector3.
 
         Returns:
             Number - Magnitude of the vector
@@ -259,34 +259,34 @@ class vector3:
         return self.dot(self)
 
     def dot(self, v):
-        &#34;&#34;&#34;Computes the dot product of this vector3 with another.
-        If we try to do this operation with anything other than a vector3, it throws
+        &#34;&#34;&#34;Computes the dot product of this Vector3 with another.
+        If we try to do this operation with anything other than a Vector3, it throws
         the InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector3 to do the dot product with
+            v {Vector3} -- Vector3 to do the dot product with
 
         Returns:
             Number - Scalar value corresponding to the dot product of both vectors
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return self.x * v.x + self.y * v.y + self.z * v.z
         else:
             raise InvalidOperationException(&#34;dot&#34;, type(self), type(v))
 
     def cross(self, v):
-        &#34;&#34;&#34;Computes the cross product of this vector3 with another.
-        If we try to do this operation with anything other than a vector3, it throws
+        &#34;&#34;&#34;Computes the cross product of this Vector3 with another.
+        If we try to do this operation with anything other than a Vector3, it throws
         the InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector3 to do the cross product with
+            v {Vector3} -- Vector3 to do the cross product with
 
         Returns:
-            vector3 - Cross product of both vectors
+            Vector3 - Cross product of both vectors
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.y * v.z - self.z * v.y,
+        if isinstance(v, Vector3):
+            return Vector3(self.y * v.z - self.z * v.y,
                            self.z * v.x - self.x * v.z,
                            self.x * v.y - self.y * v.x)
         else:
@@ -300,24 +300,24 @@ class vector3:
         self.z *= d
 
     def normalized(self):
-        &#34;&#34;&#34;Returns the normalized version of this vector3
+        &#34;&#34;&#34;Returns the normalized version of this Vector3
 
         Returns:
-            vector3 - Normalized vector
+            Vector3 - Normalized vector
         &#34;&#34;&#34;
         d = 1.0 / self.magnitude()
-        return vector3(self.x * d, self.y * d, self.z * d)
+        return Vector3(self.x * d, self.y * d, self.z * d)
 
     def x0z(self):
         &#34;&#34;&#34;Returns this vector, but with the y component zeroed.
 
         Returns:
-            vector3 - (x,0,z)
+            Vector3 - (x,0,z)
         &#34;&#34;&#34;
-        return vector3(self.x, 0, self.z)
+        return Vector3(self.x, 0, self.z)
 
     def to_np3(self):
-        &#34;&#34;&#34;Converts a vector3 to a 3-component numpy array
+        &#34;&#34;&#34;Converts a Vector3 to a 3-component numpy array
 
         Returns:
             np.array - [x,y,z]
@@ -325,7 +325,7 @@ class vector3:
         return np.array([self.x, self.y, self.z])
 
     def to_np4(self, w=1):
-        &#34;&#34;&#34;Converts a vector3 to a 4-component numpy array, with the given w as the 4th component.
+        &#34;&#34;&#34;Converts a Vector3 to a 4-component numpy array, with the given w as the 4th component.
 
         Arguments:
             w {number} - Value of the w component on the np.array.
@@ -337,24 +337,24 @@ class vector3:
 
     @staticmethod
     def from_np(np_array):
-        &#34;&#34;&#34;Converts a np.array to a vector3. No validation is done on the array to confirm it
+        &#34;&#34;&#34;Converts a np.array to a Vector3. No validation is done on the array to confirm it
         has 3 components.
 
         Arguments:
             np_array {np.array} - np.array with 3-components (rows or columns)
 
         Returns:
-            vector3 - A vector3
+            Vector3 - A Vector3
         &#34;&#34;&#34;
-        return vector3(np_array[0], np_array[1], np_array[2])
+        return Vector3(np_array[0], np_array[1], np_array[2])
 
     @staticmethod
     def distance(v1, v2):
         &#34;&#34;&#34;Returns the distance between two positions/vectors
 
         Arguments:
-            v1 {vector3} - First vector
-            v2 {vector3} - Second vector
+            v1 {Vector3} - First vector
+            v2 {Vector3} - Second vector
 
         Returns:
             number - Distance between the two positions/vectors
@@ -365,8 +365,8 @@ def dot_product(v1, v2):
     &#34;&#34;&#34;Returns the dot product between two vectors
 
     Arguments:
-        v1 {vector3} - First vector
-        v2 {vector3} - Second vector
+        v1 {Vector3} - First vector
+        v2 {Vector3} - Second vector
 
     Returns:
         number - Dot product between the vectors
@@ -377,11 +377,11 @@ def cross_product(v1, v2):
     &#34;&#34;&#34;Returns the cross product between two vectors
 
     Arguments:
-        v1 {vector3} - First vector
-        v2 {vector3} - Second vector
+        v1 {Vector3} - First vector
+        v2 {Vector3} - Second vector
 
     Returns:
-        vector3 - Cross product between the vectors
+        Vector3 - Cross product between the vectors
     &#34;&#34;&#34;
     return v1.cross(v2)</code></pre>
 </details>
@@ -399,10 +399,10 @@ def cross_product(v1, v2):
 <dd>
 <div class="desc"><p>Returns the cross product between two vectors</p>
 <h2 id="arguments">Arguments</h2>
-<p>v1 {vector3} - First vector
-v2 {vector3} - Second vector</p>
+<p>v1 {Vector3} - First vector
+v2 {Vector3} - Second vector</p>
 <h2 id="returns">Returns</h2>
-<p>vector3 - Cross product between the vectors</p></div>
+<p>Vector3 - Cross product between the vectors</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -411,11 +411,11 @@ v2 {vector3} - Second vector</p>
     &#34;&#34;&#34;Returns the cross product between two vectors
 
     Arguments:
-        v1 {vector3} - First vector
-        v2 {vector3} - Second vector
+        v1 {Vector3} - First vector
+        v2 {Vector3} - Second vector
 
     Returns:
-        vector3 - Cross product between the vectors
+        Vector3 - Cross product between the vectors
     &#34;&#34;&#34;
     return v1.cross(v2)</code></pre>
 </details>
@@ -426,8 +426,8 @@ v2 {vector3} - Second vector</p>
 <dd>
 <div class="desc"><p>Returns the dot product between two vectors</p>
 <h2 id="arguments">Arguments</h2>
-<p>v1 {vector3} - First vector
-v2 {vector3} - Second vector</p>
+<p>v1 {Vector3} - First vector
+v2 {Vector3} - Second vector</p>
 <h2 id="returns">Returns</h2>
 <p>number - Dot product between the vectors</p></div>
 <details class="source">
@@ -438,8 +438,8 @@ v2 {vector3} - Second vector</p>
     &#34;&#34;&#34;Returns the dot product between two vectors
 
     Arguments:
-        v1 {vector3} - First vector
-        v2 {vector3} - Second vector
+        v1 {Vector3} - First vector
+        v2 {Vector3} - Second vector
 
     Returns:
         number - Dot product between the vectors
@@ -480,8 +480,8 @@ v2 {vector3} - Second vector</p>
 <li>builtins.BaseException</li>
 </ul>
 </dd>
-<dt id="PyXYZ.vector3.vector3"><code class="flex name class">
-<span>class <span class="ident">vector3</span></span>
+<dt id="PyXYZ.vector3.Vector3"><code class="flex name class">
+<span>class <span class="ident">Vector3</span></span>
 <span>(</span><span>x=0, y=0, z=0)</span>
 </code></dt>
 <dd>
@@ -495,7 +495,7 @@ It stores XYZ values as floats.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class vector3:
+<pre><code class="python">class Vector3:
     &#34;&#34;&#34;3d vector class.
     It stores XYZ values as floats.&#34;&#34;&#34;
 
@@ -523,39 +523,39 @@ It stores XYZ values as floats.</p>
         return &#34;(&#34; + str(self.x) + &#34;,&#34; + str(self.y) + &#34;,&#34; + str(self.z) + &#34;)&#34;
 
     def __add__(self, v):
-        &#34;&#34;&#34;Adds this vector3 to another.
-        If we try to add anything other than a vector3 to it, it throws the
+        &#34;&#34;&#34;Adds this Vector3 to another.
+        If we try to add anything other than a Vector3 to it, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to add
+            v {Vector3} -- Vector to add
 
         Returns:
-            vector3 - Sum of this vector3 and the given one
+            Vector3 - Sum of this Vector3 and the given one
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.x + v.x, self.y + v.y, self.z + v.z)
+        if isinstance(v, Vector3):
+            return Vector3(self.x + v.x, self.y + v.y, self.z + v.z)
         else:
             raise InvalidOperationException(&#34;add&#34;, type(self), type(v))
 
     def __sub__(self, v):
-        &#34;&#34;&#34;Subtracts a vector3 from this one.
-        If we try to subtract anything other than a vector3, it throws the
+        &#34;&#34;&#34;Subtracts a Vector3 from this one.
+        If we try to subtract anything other than a Vector3, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to subtract
+            v {Vector3} -- Vector to subtract
 
         Returns:
-            vector3 - Subraction of the given vector from this one
+            Vector3 - Subraction of the given vector from this one
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.x - v.x, self.y - v.y, self.z - v.z)
+        if isinstance(v, Vector3):
+            return Vector3(self.x - v.x, self.y - v.y, self.z - v.z)
         else:
             raise InvalidOperationException(&#34;sub&#34;, type(self), type(v))
 
     def __mul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
         InvalidOperationException.
 
@@ -564,15 +564,15 @@ It stores XYZ values as floats.</p>
             multiplied by this number
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x * v, self.y * v, self.z * v)
+            return Vector3(self.x * v, self.y * v, self.z * v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __rmul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
@@ -580,88 +580,88 @@ It stores XYZ values as floats.</p>
             this number
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x * v, self.y * v, self.z * v)
+            return Vector3(self.x * v, self.y * v, self.z * v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __truediv__(self, v):
-        &#34;&#34;&#34;Divides this vector3 by a scalar.
+        &#34;&#34;&#34;Divides this Vector3 by a scalar.
         If we try to divide anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
 
         Returns:
-            vector3 - Division of the vector3
+            Vector3 - Division of the Vector3
         &#34;&#34;&#34;
         if isinstance(v, (int, float)):
-            return vector3(self.x / v, self.y / v, self.z / v)
+            return Vector3(self.x / v, self.y / v, self.z / v)
         else:
             raise InvalidOperationException(&#34;mult&#34;, type(self), type(v))
 
     def __eq__(self, v):
-        &#34;&#34;&#34;Checks if this vector3 is equal to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Vector3 is equal to the given one, with a tolerance of 0.0001.
         Exception InvalidOperationException is thrown if we compare something other than a
-        vector3.
+        Vector3.
 
         Arguments:
-            v {vector3} -- Vector to compare
+            v {Vector3} -- Vector to compare
 
         Returns:
             Bool - True if the vectors are the same, false otherwise
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return ((self - v).magnitude()) &lt; 0.0001
         else:
             raise InvalidOperationException(&#34;eq&#34;, type(self), type(v))
 
     def __ne__(self, v):
-        &#34;&#34;&#34;Checks if this vector3 is different to the given one, with a tolerance of 0.0001.
+        &#34;&#34;&#34;Checks if this Vector3 is different to the given one, with a tolerance of 0.0001.
         Exception InvalidOperationException is thrown if we compare something other than a
-        vector3.
+        Vector3.
 
         Arguments:
-            v {vector3} -- Vector to compare
+            v {Vector3} -- Vector to compare
 
         Returns:
             Bool - True if the vectors are different, false otherwise
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return ((self - v).magnitude()) &gt; 0.0001
         else:
             raise InvalidOperationException(&#34;neq&#34;, type(self), type(v))
 
     def __isub__(self, v):
-        &#34;&#34;&#34;Subtracts a vector3 from this one.
-        If we try to subtract anything other than a vector3, it throws the
+        &#34;&#34;&#34;Subtracts a Vector3 from this one.
+        If we try to subtract anything other than a Vector3, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to subtract
+            v {Vector3} -- Vector to subtract
 
         Returns:
-            vector3 - Subraction of the given vector from this one
+            Vector3 - Subraction of the given vector from this one
         &#34;&#34;&#34;
         return self - v
 
     def __iadd__(self, v):
-        &#34;&#34;&#34;Adds this vector3 to another.
-        If we try to add anything other than a vector3 to it, it throws the
+        &#34;&#34;&#34;Adds this Vector3 to another.
+        If we try to add anything other than a Vector3 to it, it throws the
         InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector to add
+            v {Vector3} -- Vector to add
 
         Returns:
-            vector3 - Sum of this vector3 and the given one
+            Vector3 - Sum of this Vector3 and the given one
         &#34;&#34;&#34;
         return self + v
 
     def __imul__(self, v):
-        &#34;&#34;&#34;Multiplies this vector3 by a scalar.
+        &#34;&#34;&#34;Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
         InvalidOperationException.
 
@@ -670,32 +670,32 @@ It stores XYZ values as floats.</p>
             multiplied by this number.
 
         Returns:
-            vector3 - Multiplication of the vector3
+            Vector3 - Multiplication of the Vector3
         &#34;&#34;&#34;
         return self * v
 
     def __idiv__(self, v):
-        &#34;&#34;&#34;Divides this vector3 by a scalar.
+        &#34;&#34;&#34;Divides this Vector3 by a scalar.
         If we try to divide anything other than a scalar, it throws the InvalidOperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
 
         Returns:
-            vector3 - Division of the vector3
+            Vector3 - Division of the Vector3
         &#34;&#34;&#34;
         return self / v
 
     def __neg__(self):
-        &#34;&#34;&#34;Negates this vector3, component-wise. Equivelent to multiplying by (-1)
+        &#34;&#34;&#34;Negates this Vector3, component-wise. Equivelent to multiplying by (-1)
 
         Returns:
-            vector3 - Negated vector3
+            Vector3 - Negated Vector3
         &#34;&#34;&#34;
-        return vector3(-self.x, -self.y, -self.z)
+        return Vector3(-self.x, -self.y, -self.z)
 
     def magnitude(self):
-        &#34;&#34;&#34;Returns the magnitude of the vector3.
+        &#34;&#34;&#34;Returns the magnitude of the Vector3.
 
         Returns:
             Number - Magnitude of the vector
@@ -703,7 +703,7 @@ It stores XYZ values as floats.</p>
         return math.sqrt(self.dot(self))
 
     def magnitude_squared(self):
-        &#34;&#34;&#34;Returns the squared magnitude of the vector3.
+        &#34;&#34;&#34;Returns the squared magnitude of the Vector3.
 
         Returns:
             Number - Magnitude of the vector
@@ -711,34 +711,34 @@ It stores XYZ values as floats.</p>
         return self.dot(self)
 
     def dot(self, v):
-        &#34;&#34;&#34;Computes the dot product of this vector3 with another.
-        If we try to do this operation with anything other than a vector3, it throws
+        &#34;&#34;&#34;Computes the dot product of this Vector3 with another.
+        If we try to do this operation with anything other than a Vector3, it throws
         the InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector3 to do the dot product with
+            v {Vector3} -- Vector3 to do the dot product with
 
         Returns:
             Number - Scalar value corresponding to the dot product of both vectors
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
+        if isinstance(v, Vector3):
             return self.x * v.x + self.y * v.y + self.z * v.z
         else:
             raise InvalidOperationException(&#34;dot&#34;, type(self), type(v))
 
     def cross(self, v):
-        &#34;&#34;&#34;Computes the cross product of this vector3 with another.
-        If we try to do this operation with anything other than a vector3, it throws
+        &#34;&#34;&#34;Computes the cross product of this Vector3 with another.
+        If we try to do this operation with anything other than a Vector3, it throws
         the InvalidOperationException.
 
         Arguments:
-            v {vector3} -- Vector3 to do the cross product with
+            v {Vector3} -- Vector3 to do the cross product with
 
         Returns:
-            vector3 - Cross product of both vectors
+            Vector3 - Cross product of both vectors
         &#34;&#34;&#34;
-        if isinstance(v, vector3):
-            return vector3(self.y * v.z - self.z * v.y,
+        if isinstance(v, Vector3):
+            return Vector3(self.y * v.z - self.z * v.y,
                            self.z * v.x - self.x * v.z,
                            self.x * v.y - self.y * v.x)
         else:
@@ -752,24 +752,24 @@ It stores XYZ values as floats.</p>
         self.z *= d
 
     def normalized(self):
-        &#34;&#34;&#34;Returns the normalized version of this vector3
+        &#34;&#34;&#34;Returns the normalized version of this Vector3
 
         Returns:
-            vector3 - Normalized vector
+            Vector3 - Normalized vector
         &#34;&#34;&#34;
         d = 1.0 / self.magnitude()
-        return vector3(self.x * d, self.y * d, self.z * d)
+        return Vector3(self.x * d, self.y * d, self.z * d)
 
     def x0z(self):
         &#34;&#34;&#34;Returns this vector, but with the y component zeroed.
 
         Returns:
-            vector3 - (x,0,z)
+            Vector3 - (x,0,z)
         &#34;&#34;&#34;
-        return vector3(self.x, 0, self.z)
+        return Vector3(self.x, 0, self.z)
 
     def to_np3(self):
-        &#34;&#34;&#34;Converts a vector3 to a 3-component numpy array
+        &#34;&#34;&#34;Converts a Vector3 to a 3-component numpy array
 
         Returns:
             np.array - [x,y,z]
@@ -777,7 +777,7 @@ It stores XYZ values as floats.</p>
         return np.array([self.x, self.y, self.z])
 
     def to_np4(self, w=1):
-        &#34;&#34;&#34;Converts a vector3 to a 4-component numpy array, with the given w as the 4th component.
+        &#34;&#34;&#34;Converts a Vector3 to a 4-component numpy array, with the given w as the 4th component.
 
         Arguments:
             w {number} - Value of the w component on the np.array.
@@ -789,24 +789,24 @@ It stores XYZ values as floats.</p>
 
     @staticmethod
     def from_np(np_array):
-        &#34;&#34;&#34;Converts a np.array to a vector3. No validation is done on the array to confirm it
+        &#34;&#34;&#34;Converts a np.array to a Vector3. No validation is done on the array to confirm it
         has 3 components.
 
         Arguments:
             np_array {np.array} - np.array with 3-components (rows or columns)
 
         Returns:
-            vector3 - A vector3
+            Vector3 - A Vector3
         &#34;&#34;&#34;
-        return vector3(np_array[0], np_array[1], np_array[2])
+        return Vector3(np_array[0], np_array[1], np_array[2])
 
     @staticmethod
     def distance(v1, v2):
         &#34;&#34;&#34;Returns the distance between two positions/vectors
 
         Arguments:
-            v1 {vector3} - First vector
-            v2 {vector3} - Second vector
+            v1 {Vector3} - First vector
+            v2 {Vector3} - Second vector
 
         Returns:
             number - Distance between the two positions/vectors
@@ -815,14 +815,14 @@ It stores XYZ values as floats.</p>
 </details>
 <h3>Static methods</h3>
 <dl>
-<dt id="PyXYZ.vector3.vector3.distance"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.distance"><code class="name flex">
 <span>def <span class="ident">distance</span></span>(<span>v1, v2)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns the distance between two positions/vectors</p>
 <h2 id="arguments">Arguments</h2>
-<p>v1 {vector3} - First vector
-v2 {vector3} - Second vector</p>
+<p>v1 {Vector3} - First vector
+v2 {Vector3} - Second vector</p>
 <h2 id="returns">Returns</h2>
 <p>number - Distance between the two positions/vectors</p></div>
 <details class="source">
@@ -834,8 +834,8 @@ def distance(v1, v2):
     &#34;&#34;&#34;Returns the distance between two positions/vectors
 
     Arguments:
-        v1 {vector3} - First vector
-        v2 {vector3} - Second vector
+        v1 {Vector3} - First vector
+        v2 {Vector3} - Second vector
 
     Returns:
         number - Distance between the two positions/vectors
@@ -843,95 +843,95 @@ def distance(v1, v2):
     return (v1 - v2).magnitude()</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.from_np"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.from_np"><code class="name flex">
 <span>def <span class="ident">from_np</span></span>(<span>np_array)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts a np.array to a vector3. No validation is done on the array to confirm it
+<div class="desc"><p>Converts a np.array to a Vector3. No validation is done on the array to confirm it
 has 3 components.</p>
 <h2 id="arguments">Arguments</h2>
 <p>np_array {np.array} - np.array with 3-components (rows or columns)</p>
 <h2 id="returns">Returns</h2>
-<p>vector3 - A vector3</p></div>
+<p>Vector3 - A Vector3</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">@staticmethod
 def from_np(np_array):
-    &#34;&#34;&#34;Converts a np.array to a vector3. No validation is done on the array to confirm it
+    &#34;&#34;&#34;Converts a np.array to a Vector3. No validation is done on the array to confirm it
     has 3 components.
 
     Arguments:
         np_array {np.array} - np.array with 3-components (rows or columns)
 
     Returns:
-        vector3 - A vector3
+        Vector3 - A Vector3
     &#34;&#34;&#34;
-    return vector3(np_array[0], np_array[1], np_array[2])</code></pre>
+    return Vector3(np_array[0], np_array[1], np_array[2])</code></pre>
 </details>
 </dd>
 </dl>
 <h3>Instance variables</h3>
 <dl>
-<dt id="PyXYZ.vector3.vector3.x"><code class="name">var <span class="ident">x</span></code></dt>
+<dt id="PyXYZ.vector3.Vector3.x"><code class="name">var <span class="ident">x</span></code></dt>
 <dd>
 <div class="desc"><p>{number} - X component</p></div>
 </dd>
-<dt id="PyXYZ.vector3.vector3.y"><code class="name">var <span class="ident">y</span></code></dt>
+<dt id="PyXYZ.vector3.Vector3.y"><code class="name">var <span class="ident">y</span></code></dt>
 <dd>
 <div class="desc"><p>{number} - Y component</p></div>
 </dd>
-<dt id="PyXYZ.vector3.vector3.z"><code class="name">var <span class="ident">z</span></code></dt>
+<dt id="PyXYZ.vector3.Vector3.z"><code class="name">var <span class="ident">z</span></code></dt>
 <dd>
 <div class="desc"><p>{number} - Z component</p></div>
 </dd>
 </dl>
 <h3>Methods</h3>
 <dl>
-<dt id="PyXYZ.vector3.vector3.cross"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.cross"><code class="name flex">
 <span>def <span class="ident">cross</span></span>(<span>self, v)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Computes the cross product of this vector3 with another.
-If we try to do this operation with anything other than a vector3, it throws
+<div class="desc"><p>Computes the cross product of this Vector3 with another.
+If we try to do this operation with anything other than a Vector3, it throws
 the InvalidOperationException.</p>
 <h2 id="arguments">Arguments</h2>
-<p>v {vector3} &ndash; Vector3 to do the cross product with</p>
+<p>v {Vector3} &ndash; Vector3 to do the cross product with</p>
 <h2 id="returns">Returns</h2>
-<p>vector3 - Cross product of both vectors</p></div>
+<p>Vector3 - Cross product of both vectors</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def cross(self, v):
-    &#34;&#34;&#34;Computes the cross product of this vector3 with another.
-    If we try to do this operation with anything other than a vector3, it throws
+    &#34;&#34;&#34;Computes the cross product of this Vector3 with another.
+    If we try to do this operation with anything other than a Vector3, it throws
     the InvalidOperationException.
 
     Arguments:
-        v {vector3} -- Vector3 to do the cross product with
+        v {Vector3} -- Vector3 to do the cross product with
 
     Returns:
-        vector3 - Cross product of both vectors
+        Vector3 - Cross product of both vectors
     &#34;&#34;&#34;
-    if isinstance(v, vector3):
-        return vector3(self.y * v.z - self.z * v.y,
+    if isinstance(v, Vector3):
+        return Vector3(self.y * v.z - self.z * v.y,
                        self.z * v.x - self.x * v.z,
                        self.x * v.y - self.y * v.x)
     else:
         raise InvalidOperationException(&#34;dot&#34;, type(self), type(v))</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.dot"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.dot"><code class="name flex">
 <span>def <span class="ident">dot</span></span>(<span>self, v)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Computes the dot product of this vector3 with another.
-If we try to do this operation with anything other than a vector3, it throws
+<div class="desc"><p>Computes the dot product of this Vector3 with another.
+If we try to do this operation with anything other than a Vector3, it throws
 the InvalidOperationException.</p>
 <h2 id="arguments">Arguments</h2>
-<p>v {vector3} &ndash; Vector3 to do the dot product with</p>
+<p>v {Vector3} &ndash; Vector3 to do the dot product with</p>
 <h2 id="returns">Returns</h2>
 <p>Number - Scalar value corresponding to the dot product of both vectors</p></div>
 <details class="source">
@@ -939,27 +939,27 @@ the InvalidOperationException.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def dot(self, v):
-    &#34;&#34;&#34;Computes the dot product of this vector3 with another.
-    If we try to do this operation with anything other than a vector3, it throws
+    &#34;&#34;&#34;Computes the dot product of this Vector3 with another.
+    If we try to do this operation with anything other than a Vector3, it throws
     the InvalidOperationException.
 
     Arguments:
-        v {vector3} -- Vector3 to do the dot product with
+        v {Vector3} -- Vector3 to do the dot product with
 
     Returns:
         Number - Scalar value corresponding to the dot product of both vectors
     &#34;&#34;&#34;
-    if isinstance(v, vector3):
+    if isinstance(v, Vector3):
         return self.x * v.x + self.y * v.y + self.z * v.z
     else:
         raise InvalidOperationException(&#34;dot&#34;, type(self), type(v))</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.magnitude"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.magnitude"><code class="name flex">
 <span>def <span class="ident">magnitude</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the magnitude of the vector3.</p>
+<div class="desc"><p>Returns the magnitude of the Vector3.</p>
 <h2 id="returns">Returns</h2>
 <p>Number - Magnitude of the vector</p></div>
 <details class="source">
@@ -967,7 +967,7 @@ the InvalidOperationException.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def magnitude(self):
-    &#34;&#34;&#34;Returns the magnitude of the vector3.
+    &#34;&#34;&#34;Returns the magnitude of the Vector3.
 
     Returns:
         Number - Magnitude of the vector
@@ -975,11 +975,11 @@ the InvalidOperationException.</p>
     return math.sqrt(self.dot(self))</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.magnitude_squared"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.magnitude_squared"><code class="name flex">
 <span>def <span class="ident">magnitude_squared</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the squared magnitude of the vector3.</p>
+<div class="desc"><p>Returns the squared magnitude of the Vector3.</p>
 <h2 id="returns">Returns</h2>
 <p>Number - Magnitude of the vector</p></div>
 <details class="source">
@@ -987,7 +987,7 @@ the InvalidOperationException.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def magnitude_squared(self):
-    &#34;&#34;&#34;Returns the squared magnitude of the vector3.
+    &#34;&#34;&#34;Returns the squared magnitude of the Vector3.
 
     Returns:
         Number - Magnitude of the vector
@@ -995,7 +995,7 @@ the InvalidOperationException.</p>
     return self.dot(self)</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.normalize"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.normalize"><code class="name flex">
 <span>def <span class="ident">normalize</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1012,32 +1012,32 @@ the InvalidOperationException.</p>
     self.z *= d</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.normalized"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.normalized"><code class="name flex">
 <span>def <span class="ident">normalized</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the normalized version of this vector3</p>
+<div class="desc"><p>Returns the normalized version of this Vector3</p>
 <h2 id="returns">Returns</h2>
-<p>vector3 - Normalized vector</p></div>
+<p>Vector3 - Normalized vector</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def normalized(self):
-    &#34;&#34;&#34;Returns the normalized version of this vector3
+    &#34;&#34;&#34;Returns the normalized version of this Vector3
 
     Returns:
-        vector3 - Normalized vector
+        Vector3 - Normalized vector
     &#34;&#34;&#34;
     d = 1.0 / self.magnitude()
-    return vector3(self.x * d, self.y * d, self.z * d)</code></pre>
+    return Vector3(self.x * d, self.y * d, self.z * d)</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.to_np3"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.to_np3"><code class="name flex">
 <span>def <span class="ident">to_np3</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts a vector3 to a 3-component numpy array</p>
+<div class="desc"><p>Converts a Vector3 to a 3-component numpy array</p>
 <h2 id="returns">Returns</h2>
 <p>np.array - [x,y,z]</p></div>
 <details class="source">
@@ -1045,7 +1045,7 @@ the InvalidOperationException.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_np3(self):
-    &#34;&#34;&#34;Converts a vector3 to a 3-component numpy array
+    &#34;&#34;&#34;Converts a Vector3 to a 3-component numpy array
 
     Returns:
         np.array - [x,y,z]
@@ -1053,11 +1053,11 @@ the InvalidOperationException.</p>
     return np.array([self.x, self.y, self.z])</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.to_np4"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.to_np4"><code class="name flex">
 <span>def <span class="ident">to_np4</span></span>(<span>self, w=1)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Converts a vector3 to a 4-component numpy array, with the given w as the 4th component.</p>
+<div class="desc"><p>Converts a Vector3 to a 4-component numpy array, with the given w as the 4th component.</p>
 <h2 id="arguments">Arguments</h2>
 <p>w {number} - Value of the w component on the np.array.</p>
 <h2 id="returns">Returns</h2>
@@ -1067,7 +1067,7 @@ the InvalidOperationException.</p>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def to_np4(self, w=1):
-    &#34;&#34;&#34;Converts a vector3 to a 4-component numpy array, with the given w as the 4th component.
+    &#34;&#34;&#34;Converts a Vector3 to a 4-component numpy array, with the given w as the 4th component.
 
     Arguments:
         w {number} - Value of the w component on the np.array.
@@ -1078,13 +1078,13 @@ the InvalidOperationException.</p>
     return np.array([self.x, self.y, self.z, w])</code></pre>
 </details>
 </dd>
-<dt id="PyXYZ.vector3.vector3.x0z"><code class="name flex">
+<dt id="PyXYZ.vector3.Vector3.x0z"><code class="name flex">
 <span>def <span class="ident">x0z</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Returns this vector, but with the y component zeroed.</p>
 <h2 id="returns">Returns</h2>
-<p>vector3 - (x,0,z)</p></div>
+<p>Vector3 - (x,0,z)</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -1093,9 +1093,9 @@ the InvalidOperationException.</p>
     &#34;&#34;&#34;Returns this vector, but with the y component zeroed.
 
     Returns:
-        vector3 - (x,0,z)
+        Vector3 - (x,0,z)
     &#34;&#34;&#34;
-    return vector3(self.x, 0, self.z)</code></pre>
+    return Vector3(self.x, 0, self.z)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1126,22 +1126,22 @@ the InvalidOperationException.</p>
 <h4><code><a title="PyXYZ.vector3.InvalidOperationException" href="#PyXYZ.vector3.InvalidOperationException">InvalidOperationException</a></code></h4>
 </li>
 <li>
-<h4><code><a title="PyXYZ.vector3.vector3" href="#PyXYZ.vector3.vector3">vector3</a></code></h4>
+<h4><code><a title="PyXYZ.vector3.Vector3" href="#PyXYZ.vector3.Vector3">Vector3</a></code></h4>
 <ul class="two-column">
-<li><code><a title="PyXYZ.vector3.vector3.cross" href="#PyXYZ.vector3.vector3.cross">cross</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.distance" href="#PyXYZ.vector3.vector3.distance">distance</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.dot" href="#PyXYZ.vector3.vector3.dot">dot</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.from_np" href="#PyXYZ.vector3.vector3.from_np">from_np</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.magnitude" href="#PyXYZ.vector3.vector3.magnitude">magnitude</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.magnitude_squared" href="#PyXYZ.vector3.vector3.magnitude_squared">magnitude_squared</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.normalize" href="#PyXYZ.vector3.vector3.normalize">normalize</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.normalized" href="#PyXYZ.vector3.vector3.normalized">normalized</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.to_np3" href="#PyXYZ.vector3.vector3.to_np3">to_np3</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.to_np4" href="#PyXYZ.vector3.vector3.to_np4">to_np4</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.x" href="#PyXYZ.vector3.vector3.x">x</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.x0z" href="#PyXYZ.vector3.vector3.x0z">x0z</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.y" href="#PyXYZ.vector3.vector3.y">y</a></code></li>
-<li><code><a title="PyXYZ.vector3.vector3.z" href="#PyXYZ.vector3.vector3.z">z</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.cross" href="#PyXYZ.vector3.Vector3.cross">cross</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.distance" href="#PyXYZ.vector3.Vector3.distance">distance</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.dot" href="#PyXYZ.vector3.Vector3.dot">dot</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.from_np" href="#PyXYZ.vector3.Vector3.from_np">from_np</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.magnitude" href="#PyXYZ.vector3.Vector3.magnitude">magnitude</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.magnitude_squared" href="#PyXYZ.vector3.Vector3.magnitude_squared">magnitude_squared</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.normalize" href="#PyXYZ.vector3.Vector3.normalize">normalize</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.normalized" href="#PyXYZ.vector3.Vector3.normalized">normalized</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.to_np3" href="#PyXYZ.vector3.Vector3.to_np3">to_np3</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.to_np4" href="#PyXYZ.vector3.Vector3.to_np4">to_np4</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.x" href="#PyXYZ.vector3.Vector3.x">x</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.x0z" href="#PyXYZ.vector3.Vector3.x0z">x0z</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.y" href="#PyXYZ.vector3.Vector3.y">y</a></code></li>
+<li><code><a title="PyXYZ.vector3.Vector3.z" href="#PyXYZ.vector3.Vector3.z">z</a></code></li>
 </ul>
 </li>
 </ul>

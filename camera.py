@@ -3,7 +3,7 @@
 import math
 import numpy as np
 from quaternion import as_rotation_matrix
-from vector3 import vector3
+from vector3 import Vector3
 from object3d import Object3d
 
 class Camera(Object3d):
@@ -108,11 +108,11 @@ class Camera(Object3d):
             pos {2-tuple} -- Screen position in NDC (normalized device coordinates)
 
         Returns:
-            vector3, vector3 - Origin and direction of the ray corresponding to that screen
+            Vector3, Vector3 - Origin and direction of the ray corresponding to that screen
             positions
         """
 
-        vpos = vector3(pos[0], pos[1], self.near_plane)
+        vpos = Vector3(pos[0], pos[1], self.near_plane)
         vpos.x = vpos.x * self.res_x * 0.5
         vpos.y = -vpos.y * self.res_y * 0.5
 
@@ -120,6 +120,6 @@ class Camera(Object3d):
         inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
 
         direction = inv_view_proj_matrix @ vpos.to_np4(1)
-        direction = vector3.from_np(direction).normalized()
+        direction = Vector3.from_np(direction).normalized()
 
         return self.position + direction * self.near_plane, direction
