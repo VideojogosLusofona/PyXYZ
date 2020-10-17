@@ -4,7 +4,7 @@ import math
 import pygame
 import pygame.freetype
 
-from quaternion import from_rotation_vector
+from quaternion import Quaternion
 from scene import Scene
 from object3d import Object3d
 from camera import Camera
@@ -130,7 +130,7 @@ def main():
 
     # Moves the camera back 2 units
     scene.camera.position -= Vector3(0, 0, 4)
-    scene.camera.rotation = from_rotation_vector((Vector3(1, 0, 0) * math.radians(-15)).to_np3())
+    scene.camera.rotation = Quaternion.AngleAxis(Vector3(1, 0, 0), math.radians(-15))
 
     # Creates the terrain meshes and materials
     terrain_meshes, terrain_materials = create_terrain()
@@ -180,21 +180,21 @@ def main():
         screen.fill((0, 0, 0))
 
         # Rotates the object, considering the time passed (not linked to frame rate)
-        q = from_rotation_vector((axis * math.radians(angle) * delta_time).to_np3())
+        q = Quaternion.AngleAxis(axis, math.radians(angle) * delta_time)
         master_object.rotation = q * master_object.rotation
 
         #Commented code serves to make benchmarks
-        #Mesh.stat_vertex_count = 0
-        #Mesh.stat_transform_time = 0
-        #Mesh.stat_render_time = 0
+        Mesh.stat_vertex_count = 0
+        Mesh.stat_transform_time = 0
+        Mesh.stat_render_time = 0
 
         scene.render(screen)
 
         #Writes the benchmarks results
-        #print("Frame stats:")
-        #print(f"Vertex count = {Mesh.stat_vertex_count}")
-        #print(f"Transform time = {Mesh.stat_transform_time}s")
-        #print(f"Render time = {Mesh.stat_render_time}s")
+        print("Frame stats:")
+        print(f"Vertex count = {Mesh.stat_vertex_count}")
+        print(f"Transform time = {Mesh.stat_transform_time}s")
+        print(f"Render time = {Mesh.stat_render_time}s")
 
         # Swaps the back and front buffer, effectively displaying what we rendered
         pygame.display.flip()
@@ -203,7 +203,7 @@ def main():
         delta_time = time.time() - prev_time
         prev_time = time.time()
 
-        #print(f"Frame time = {delta_time}s")
+        print(f"Frame time = {delta_time}s")
 
 # Run the main function
 main()

@@ -50,7 +50,7 @@ class Scene:
         camera_matrix = self.camera.get_camera_matrix()
         projection_matrix = self.camera.get_projection_matrix()
 
-        clip_matrix = camera_matrix @ projection_matrix
+        clip_matrix = camera_matrix * projection_matrix
 
         # Render all root-level objects
         for obj in self.objects:

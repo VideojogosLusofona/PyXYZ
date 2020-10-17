@@ -4,8 +4,6 @@ import time
 import random
 import math
 import pygame
-import numpy as np
-from quaternion import from_rotation_vector
 
 from scene import Scene
 from object3d import Object3d
@@ -14,6 +12,7 @@ from mesh import Mesh
 from material import Material
 from color import Color
 from vector3 import Vector3, dot_product, cross_product
+from quaternion import Quaternion
 from perlin import noise2d
 
 class Missile(Object3d):
@@ -39,14 +38,14 @@ class Missile(Object3d):
         r = random.uniform(0, 100)
         if r > 66:
             self.position.x = 7
-            self.rotation = from_rotation_vector((Vector3(0, 1, 0) * math.radians(90)).to_np3())
+            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(90))
         elif r > 33:
             self.position.y = -2
             self.position.x = random.uniform(-4, 4)
-            self.rotation = from_rotation_vector((Vector3(1, 0, 0) * math.radians(90)).to_np3())
+            self.rotation = Quaternion.AngleAxis(Vector3(1, 0, 0), math.radians(90))
         else:
             self.position.x = -7
-            self.rotation = from_rotation_vector((Vector3(0, 1, 0) * math.radians(-90)).to_np3())
+            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(-90))
 
         # Set the mesh and material of the missile
         self.mesh = Missile.missile_mesh
@@ -67,7 +66,7 @@ class Missile(Object3d):
         current_dir = self.forward()
         desired_dir = (Vector3(0, 0, 0) - self.position).normalized()
         # Find the angle between these two directions
-        dp = np.clip(dot_product(current_dir, desired_dir), -1, 1)
+        dp = max(-1, min(1, dot_product(current_dir, desired_dir)))
         angle = math.acos(dp)
 
         # If the angle is larger than the ammount we can rotate a single frame,
@@ -80,7 +79,7 @@ class Missile(Object3d):
         axis = -cross_product(current_dir, desired_dir)
 
         # Rotate the missile towards the player
-        q = from_rotation_vector((axis * angle).to_np3())
+        q = Quaternion.AngleAxis(axis, angle)
         self.rotation = self.rotation * q
 
     @staticmethod

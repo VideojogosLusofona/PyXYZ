@@ -3,7 +3,7 @@ import time
 import math
 import pygame
 
-from quaternion import from_rotation_vector
+from quaternion import Quaternion
 
 from scene import Scene
 from object3d import Object3d
@@ -70,7 +70,9 @@ def main():
         screen.fill((0, 0, 0))
 
         # Rotates the object, considering the time passed (not linked to frame rate)
-        q = from_rotation_vector((axis * math.radians(angle) * delta_time).to_np3())
+        ax = (axis * math.radians(angle) * delta_time)
+
+        q = Quaternion.AngleAxis(axis, math.radians(angle) * delta_time)
         obj1.rotation = q * obj1.rotation
 
         scene.render(screen)

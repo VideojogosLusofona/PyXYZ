@@ -1,8 +1,8 @@
 """3d vector class and helper functions"""
 import math
-import numpy as np
+import vector4
 
-class InvalidOperationException(Exception):
+class InvalidVec3OperationException(Exception):
     """Exception thrown when there's an invalid operation with vectors"""
     def __init__(self, op, type1, type2):
         super().__init__(self)
@@ -12,7 +12,7 @@ class InvalidOperationException(Exception):
 
     def __str__(self):
         """Returns a readable version of the exception"""
-        return f"Invalid operation ({self.op}) between {self.type1} and {self.type2}!"
+        return f"Invalid Vector3 operation ({self.op}) between {self.type1} and {self.type2}!"
 
 class Vector3:
     """3d vector class.
@@ -44,7 +44,7 @@ class Vector3:
     def __add__(self, v):
         """Adds this Vector3 to another.
         If we try to add anything other than a Vector3 to it, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector to add
@@ -55,12 +55,12 @@ class Vector3:
         if isinstance(v, Vector3):
             return Vector3(self.x + v.x, self.y + v.y, self.z + v.z)
         else:
-            raise InvalidOperationException("add", type(self), type(v))
+            raise InvalidVec3OperationException("add", type(self), type(v))
 
     def __sub__(self, v):
         """Subtracts a Vector3 from this one.
         If we try to subtract anything other than a Vector3, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector to subtract
@@ -71,12 +71,12 @@ class Vector3:
         if isinstance(v, Vector3):
             return Vector3(self.x - v.x, self.y - v.y, self.z - v.z)
         else:
-            raise InvalidOperationException("sub", type(self), type(v))
+            raise InvalidVec3OperationException("sub", type(self), type(v))
 
     def __mul__(self, v):
         """Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {number} -- Scalar to multiply: all components of the vector are
@@ -88,11 +88,11 @@ class Vector3:
         if isinstance(v, (int, float)):
             return Vector3(self.x * v, self.y * v, self.z * v)
         else:
-            raise InvalidOperationException("mult", type(self), type(v))
+            raise InvalidVec3OperationException("mult", type(self), type(v))
 
     def __rmul__(self, v):
         """Multiplies this Vector3 by a scalar.
-        If we try to multiply anything other than a scalar, it throws the InvalidOperationException
+        If we try to multiply anything other than a scalar, it throws the InvalidVec3OperationException
 
         Arguments:
             v {number} -- Scalar to multiply: all components of the vector are multiplied by
@@ -104,11 +104,11 @@ class Vector3:
         if isinstance(v, (int, float)):
             return Vector3(self.x * v, self.y * v, self.z * v)
         else:
-            raise InvalidOperationException("mult", type(self), type(v))
+            raise InvalidVec3OperationException("rmult", type(self), type(v))
 
     def __truediv__(self, v):
         """Divides this Vector3 by a scalar.
-        If we try to divide anything other than a scalar, it throws the InvalidOperationException
+        If we try to divide anything other than a scalar, it throws the InvalidVec3OperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
@@ -119,11 +119,11 @@ class Vector3:
         if isinstance(v, (int, float)):
             return Vector3(self.x / v, self.y / v, self.z / v)
         else:
-            raise InvalidOperationException("mult", type(self), type(v))
+            raise InvalidVec3OperationException("truediv", type(self), type(v))
 
     def __eq__(self, v):
         """Checks if this Vector3 is equal to the given one, with a tolerance of 0.0001.
-        Exception InvalidOperationException is thrown if we compare something other than a
+        Exception InvalidVec3OperationException is thrown if we compare something other than a
         Vector3.
 
         Arguments:
@@ -135,11 +135,11 @@ class Vector3:
         if isinstance(v, Vector3):
             return ((self - v).magnitude()) < 0.0001
         else:
-            raise InvalidOperationException("eq", type(self), type(v))
+            raise InvalidVec3OperationException("eq", type(self), type(v))
 
     def __ne__(self, v):
         """Checks if this Vector3 is different to the given one, with a tolerance of 0.0001.
-        Exception InvalidOperationException is thrown if we compare something other than a
+        Exception InvalidVec3OperationException is thrown if we compare something other than a
         Vector3.
 
         Arguments:
@@ -151,12 +151,12 @@ class Vector3:
         if isinstance(v, Vector3):
             return ((self - v).magnitude()) > 0.0001
         else:
-            raise InvalidOperationException("neq", type(self), type(v))
+            raise InvalidVec3OperationException("neq", type(self), type(v))
 
     def __isub__(self, v):
         """Subtracts a Vector3 from this one.
         If we try to subtract anything other than a Vector3, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector to subtract
@@ -169,7 +169,7 @@ class Vector3:
     def __iadd__(self, v):
         """Adds this Vector3 to another.
         If we try to add anything other than a Vector3 to it, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector to add
@@ -182,7 +182,7 @@ class Vector3:
     def __imul__(self, v):
         """Multiplies this Vector3 by a scalar.
         If we try to multiply anything other than a scalar, it throws the
-        InvalidOperationException.
+        InvalidVec3OperationException.
 
         Arguments:
             v {number} -- Scalar to multiply: all components of the vector are
@@ -195,7 +195,7 @@ class Vector3:
 
     def __idiv__(self, v):
         """Divides this Vector3 by a scalar.
-        If we try to divide anything other than a scalar, it throws the InvalidOperationException
+        If we try to divide anything other than a scalar, it throws the InvalidVec3OperationException
 
         Arguments:
             v {number} -- Scalar to divide: all components of the vector are divided by this number
@@ -232,7 +232,7 @@ class Vector3:
     def dot(self, v):
         """Computes the dot product of this Vector3 with another.
         If we try to do this operation with anything other than a Vector3, it throws
-        the InvalidOperationException.
+        the InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector3 to do the dot product with
@@ -243,12 +243,12 @@ class Vector3:
         if isinstance(v, Vector3):
             return self.x * v.x + self.y * v.y + self.z * v.z
         else:
-            raise InvalidOperationException("dot", type(self), type(v))
+            raise InvalidVec3OperationException("dot", type(self), type(v))
 
     def cross(self, v):
         """Computes the cross product of this Vector3 with another.
         If we try to do this operation with anything other than a Vector3, it throws
-        the InvalidOperationException.
+        the InvalidVec3OperationException.
 
         Arguments:
             v {Vector3} -- Vector3 to do the cross product with
@@ -261,7 +261,7 @@ class Vector3:
                            self.z * v.x - self.x * v.z,
                            self.x * v.y - self.y * v.x)
         else:
-            raise InvalidOperationException("dot", type(self), type(v))
+            raise InvalidVec3OperationException("dot", type(self), type(v))
 
     def normalize(self):
         """Normalizes this vector"""
@@ -286,38 +286,6 @@ class Vector3:
             Vector3 - (x,0,z)
         """
         return Vector3(self.x, 0, self.z)
-
-    def to_np3(self):
-        """Converts a Vector3 to a 3-component numpy array
-
-        Returns:
-            np.array - [x,y,z]
-        """
-        return np.array([self.x, self.y, self.z])
-
-    def to_np4(self, w=1):
-        """Converts a Vector3 to a 4-component numpy array, with the given w as the 4th component.
-
-        Arguments:
-            w {number} - Value of the w component on the np.array.
-
-        Returns:
-            np.array - [x,y,z,w]
-        """
-        return np.array([self.x, self.y, self.z, w])
-
-    @staticmethod
-    def from_np(np_array):
-        """Converts a np.array to a Vector3. No validation is done on the array to confirm it
-        has 3 components.
-
-        Arguments:
-            np_array {np.array} - np.array with 3-components (rows or columns)
-
-        Returns:
-            Vector3 - A Vector3
-        """
-        return Vector3(np_array[0], np_array[1], np_array[2])
 
     @staticmethod
     def distance(v1, v2):

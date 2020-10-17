@@ -3,7 +3,7 @@ import time
 import random
 import pygame
 
-from quaternion import from_rotation_vector
+from quaternion import Quaternion
 
 from scene import Scene
 from object3d import Object3d
@@ -41,7 +41,7 @@ class FallingCube(Object3d):
         self.velocity += GRAVITY * delta_time
         self.position.y += self.velocity * delta_time
 
-        q = from_rotation_vector((self.rotation_axis * self.rotation_speed * delta_time).to_np3())
+        q = Quaternion.AngleAxis(self.rotation_axis, self.rotation_speed * delta_time)
         self.rotation = q * self.rotation
 
 def main():

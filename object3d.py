@@ -1,8 +1,9 @@
 """3d Object class"""
 
-import numpy as np
-from quaternion import quaternion, as_rotation_matrix
+from quaternion import Quaternion
 from vector3 import Vector3
+from vector4 import Vector4
+from matrix4 import Matrix4
 
 class Object3d:
     """3d object class.
@@ -18,7 +19,7 @@ class Object3d:
         """ {str} Name of the object"""
         self.position = Vector3()
         """ {Vector3} Local position of the object (relative to parent)"""
-        self.rotation = quaternion(1, 0, 0, 0)
+        self.rotation = Quaternion.identity()
         """ {quaternion} Local rotation of the object {relative to parent)"""
         self.scale = Vector3(1, 1, 1)
         """ {Vector3} Local scale of the object (relative to parent)"""
@@ -35,7 +36,7 @@ class Object3d:
 
         Returns:
 
-            {np.array} -- Local transformation matrix
+            {Matrix4} -- Local transformation matrix
         """
         return Object3d.get_prs_matrix(self.position, self.rotation, self.scale)
 
@@ -47,7 +48,7 @@ class Object3d:
 
             screen {pygame.Surface} -- Pygame surface in which this object will be rendered
 
-            clip_matrix {np.array} -- Parent transformation matrix (including view and projection
+            clip_matrix {Matrix4} -- Parent transformation matrix (including view and projection
             matrix)
         """
 
@@ -55,7 +56,7 @@ class Object3d:
         world_matrix = self.get_matrix()
 
         # Multiply the local transformation with the clip matrix (transformation compositing)
-        mesh_matrix = world_matrix @ clip_matrix
+        mesh_matrix = world_matrix * clip_matrix
 
         # If there's a mesh and a material
         if ((self.material is not None) and (self.mesh is not None)):
@@ -97,7 +98,8 @@ class Object3d:
 
             {Vector3} - Local position of the object
         """
-        return Vector3.from_np(Vector3(0, 0, 0).to_np4(1) @ self.get_matrix())
+        v = self.get_matrix() * Vector4(0, 0, 0, 1)
+        return Vector3(v.x, v.y, v.z)
 
     def forward(self):
         """
@@ -108,7 +110,8 @@ class Object3d:
 
             {Vector3} - Local forward vector of the object
         """
-        return Vector3.from_np(Vector3(0, 0, 1).to_np4(0) @ self.get_matrix())
+        v = self.get_matrix() * Vector4(0, 0, 1, 0)
+        return Vector3(v.x, v.y, v.z)
 
     def up(self):
         """
@@ -119,7 +122,8 @@ class Object3d:
 
             {Vector3} - Local up vector of the object
         """
-        return Vector3.from_np(Vector3(0, 1, 0).to_np4(0) @ self.get_matrix())
+        v = self.get_matrix() * Vector4(0, 1, 0, 0)
+        return Vector3(v.x, v.y, v.z)
 
     def right(self):
         """
@@ -130,7 +134,8 @@ class Object3d:
 
             {Vector3} - Local right vector of the object
         """
-        return Vector3.from_np(Vector3(1, 0, 0).to_np4(0) @ self.get_matrix())
+        v = self.get_matrix() * Vector4(1, 0, 0, 0)
+        return Vector3(v.x, v.y, v.z)
 
     @staticmethod
     def get_prs_matrix(position, rotation, scale):
@@ -147,29 +152,18 @@ class Object3d:
 
         Returns:
 
-            {np.array} - PRS matrix
+            {Matrix4} - PRS matrix
         """
-        trans = np.identity(4)
+        trans = Matrix4.identity()
         trans[3][0] = position.x
         trans[3][1] = position.y
         trans[3][2] = position.z
 
-        qrot = as_rotation_matrix(rotation)
-        rotation_matrix = np.identity(4)
-        rotation_matrix[0][0] = qrot[0][0]
-        rotation_matrix[0][1] = qrot[0][1]
-        rotation_matrix[0][2] = qrot[0][2]
-        rotation_matrix[1][0] = qrot[1][0]
-        rotation_matrix[1][1] = qrot[1][1]
-        rotation_matrix[1][2] = qrot[1][2]
-        rotation_matrix[2][0] = qrot[2][0]
-        rotation_matrix[2][1] = qrot[2][1]
-        rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3][3] = 1
+        rotation_matrix = rotation.as_rotation_matrix()
 
-        scale_matrix = np.identity(4)
+        scale_matrix = Matrix4.identity()
         scale_matrix[0][0] = scale.x
         scale_matrix[1][1] = scale.y
         scale_matrix[2][2] = scale.z
 
-        return scale_matrix @ rotation_matrix @ trans
+        return scale_matrix * rotation_matrix * trans

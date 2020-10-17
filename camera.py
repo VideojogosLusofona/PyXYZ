@@ -1,9 +1,9 @@
 """Camera class definition"""
 
 import math
-import numpy as np
-from quaternion import as_rotation_matrix
+from quaternion import Quaternion
 from vector3 import Vector3
+from matrix4 import Matrix4
 from object3d import Object3d
 
 class Camera(Object3d):
@@ -37,8 +37,8 @@ class Camera(Object3d):
         """{number} Distance from the camera to the far plane. Defaults to 100"""
         self.fov = math.radians(60)
         """{number} Field of view angle (in radians) of the camera (if in perspective mode)"""
-        self.proj_matrix = np.identity(4)
-        """{np.array} Projection matrix. This is only set after get_projection_matrix is called
+        self.proj_matrix = Matrix4.identity()
+        """{Matrix4} Projection matrix. This is only set after get_projection_matrix is called
         once"""
 
     def get_projection_matrix(self):
@@ -46,9 +46,9 @@ class Camera(Object3d):
         This function sets up the proj_matrix attribute as well.
 
         Returns:
-            np.array - Projection matrix of this camera
+            Matrix4 - Projection matrix of this camera
         """
-        self.proj_matrix = np.zeros((4, 4))
+        self.proj_matrix = Matrix4.zeros()
         if self.ortho:
             self.proj_matrix[0, 0] = self.res_x * 0.5
             self.proj_matrix[1, 1] = self.res_y * 0.5
@@ -71,27 +71,16 @@ class Camera(Object3d):
         without scalling, and with the position and rotation negated.
 
         Returns:
-            np.array - View matrix of this camera
+            Matrix4 - View matrix of this camera
         """
-        trans = np.identity(4)
+        trans = Matrix4.identity()
         trans[3, 0] = -self.position.x
         trans[3, 1] = -self.position.y
         trans[3, 2] = -self.position.z
 
-        qrot = as_rotation_matrix(self.rotation.inverse())
-        rotation_matrix = np.identity(4)
-        rotation_matrix[0][0] = qrot[0][0]
-        rotation_matrix[0][1] = qrot[0][1]
-        rotation_matrix[0][2] = qrot[0][2]
-        rotation_matrix[1][0] = qrot[1][0]
-        rotation_matrix[1][1] = qrot[1][1]
-        rotation_matrix[1][2] = qrot[1][2]
-        rotation_matrix[2][0] = qrot[2][0]
-        rotation_matrix[2][1] = qrot[2][1]
-        rotation_matrix[2][2] = qrot[2][2]
-        rotation_matrix[3][3] = 1
+        rotation_matrix = self.rotation.inverted().as_rotation_matrix()
 
-        return trans @ rotation_matrix
+        return trans * rotation_matrix
 
     def ray_from_ndc(self, pos):
         """Retrieves a ray (origin, direction) corresponding to the given position on screen.

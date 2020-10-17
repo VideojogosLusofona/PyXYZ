@@ -1,7 +1,11 @@
 """Mesh class definition"""
+# Just import time if we need statistics
+import time
 import math
 import pygame
 from vector3 import Vector3
+import matrix4
+
 
 class Mesh:
     """Mesh class.
@@ -54,7 +58,7 @@ class Mesh:
 
             screen {pygame.surface} -- Display surface on which to render the mesh
 
-            clip_matrix {np.array} -- Clip matrix to use to convert the 3d local space coordinates
+            clip_matrix {Matrix4} -- Clip matrix to use to convert the 3d local space coordinates
             of the vertices to screen coordinates.
 
             material {Material} -- Material to be used to render the mesh
@@ -65,35 +69,36 @@ class Mesh:
         """
         # Convert Color to the pygame format
         c = material.Color.tuple3()
+        w = screen.get_width() * 0.5
+        h = screen.get_height() * 0.5
 
         # For all polygons
         for poly in self.polygons:
             # Create the list that will store (temporarily) the transformed vertices
             tpoly = []
             # Uncomment next 2 lines for statistics
-            #Mesh.stat_vertex_count += len(poly)
-            #t0 = time.time()
+            Mesh.stat_vertex_count += len(poly)
+            t0 = time.time()
             for v in poly:
-                # Convert the vertex to numpy format and multiply it by the clip matrix
-                vout = v.to_np4()
-                vout = vout @ clip_matrix
+                # Multiply vertex it by the clip matrix
+                vout = clip_matrix.premultiply_v3(v, 1)
 
                 # Finalize the transformation by converting the point from homogeneous NDC to
                 # screen coordinates (divide by w, scale it by the viewport resolution and
                 # offset it)
-                tpoly.append((screen.get_width() * 0.5 + vout[0] / vout[3],
-                              screen.get_height() * 0.5 - vout[1] / vout[3]))
+                tpoly.append((w + vout.x / vout.w,
+                              h - vout.y / vout.w))
 
             # Uncomment next line for statistics
-            #t1 = time.time()
+            t1 = time.time()
 
             # Render
             pygame.draw.polygon(screen, c, tpoly, material.line_width)
 
             # Uncomment next 3 lines for statistics
-            #t2 = time.time()
-            #Mesh.stat_transform_time += (t1 - t0)
-            #Mesh.stat_render_time += (t2 - t1)
+            t2 = time.time()
+            Mesh.stat_transform_time += (t1 - t0)
+            Mesh.stat_render_time += (t2 - t1)
 
     @staticmethod
     def create_cube(size, mesh=None):

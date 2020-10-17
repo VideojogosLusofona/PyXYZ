@@ -4,7 +4,7 @@ import time
 import math
 import pygame
 
-from quaternion import from_rotation_vector
+from quaternion import Quaternion
 
 from scene import Scene
 from object3d import Object3d
@@ -32,12 +32,12 @@ def main():
     scene.camera = Camera(False, res_x, res_y)
 
     # Moves the camera back 2 units
-    scene.camera.position -= Vector3(0, 0, 2)
+    scene.camera.position = Vector3(0, 0, -2)
 
     # Create a cube and place it in a scene, at position (0,0,0)
     obj1 = Object3d("TestObject")
     obj1.scale = Vector3(1, 1, 1)
-    obj1.position = Vector3(0, -1, 0)
+    obj1.position = Vector3(0, 0, 2)
     obj1.mesh = Mesh.create_cube((1, 1, 1))
     obj1.material = Material(Color(1, 0, 0, 1), "TestMaterial1")
     scene.add_object(obj1)
@@ -80,7 +80,7 @@ def main():
         screen.fill((0, 0, 20))
 
         # Rotates the object, considering the time passed (not linked to frame rate)
-        q = from_rotation_vector((axis * math.radians(angle) * delta_time).to_np3())
+        q = Quaternion.AngleAxis(axis, math.radians(angle) * delta_time)
         obj1.rotation = q * obj1.rotation
 
         scene.render(screen)
