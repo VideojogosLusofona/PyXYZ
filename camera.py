@@ -105,10 +105,10 @@ class Camera(Object3d):
         vpos.x = vpos.x * self.res_x * 0.5
         vpos.y = -vpos.y * self.res_y * 0.5
 
-        inv_view_proj_matrix = self.get_camera_matrix() @ self.get_projection_matrix()
-        inv_view_proj_matrix = np.linalg.inv(inv_view_proj_matrix)
+        inv_view_proj_matrix = self.get_camera_matrix() * self.get_projection_matrix()
+        inv_view_proj_matrix.invert()
 
-        direction = inv_view_proj_matrix @ vpos.to_np4(1)
-        direction = Vector3.from_np(direction).normalized()
+        direction = inv_view_proj_matrix.posmultiply_v3(vpos, 1)
+        direction = Vector3(direction.x, direction.y, direction.z).normalized()
 
         return self.position + direction * self.near_plane, direction

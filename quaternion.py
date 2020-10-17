@@ -331,9 +331,9 @@ class Quaternion:
         ang2 = ang * 0.5
         sin_ang2 = math.sin(ang2)
 
-        x = axis.x * sin_ang2
-        y = axis.y * sin_ang2
-        z = axis.z * sin_ang2
+        x = -axis.x * sin_ang2
+        y = -axis.y * sin_ang2
+        z = -axis.z * sin_ang2
         w = math.cos(ang2)
 
         return Quaternion(x, y, z, w)

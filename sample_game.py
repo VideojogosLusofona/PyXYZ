@@ -38,14 +38,14 @@ class Missile(Object3d):
         r = random.uniform(0, 100)
         if r > 66:
             self.position.x = 7
-            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(90))
+            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(-90))
         elif r > 33:
             self.position.y = -2
             self.position.x = random.uniform(-4, 4)
-            self.rotation = Quaternion.AngleAxis(Vector3(1, 0, 0), math.radians(90))
+            self.rotation = Quaternion.AngleAxis(Vector3(1, 0, 0), math.radians(-90))
         else:
             self.position.x = -7
-            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(-90))
+            self.rotation = Quaternion.AngleAxis(Vector3(0, 1, 0), math.radians(90))
 
         # Set the mesh and material of the missile
         self.mesh = Missile.missile_mesh
@@ -53,7 +53,7 @@ class Missile(Object3d):
         # Sets the missile linear speed
         self.missile_speed = 2
         # Sets the rotation speed (in radians per second)
-        self.missile_rotation_speed = 1.5
+        self.missile_rotation_speed = 0.75
 
     def update(self, delta_time):
         """Animates the missile."""
@@ -76,11 +76,13 @@ class Missile(Object3d):
             angle = self.missile_rotation_speed * delta_time * math.copysign(1, angle)
 
         # Figure out the rotation axis to point the missile towards the desired direction
-        axis = -cross_product(current_dir, desired_dir)
+        axis = cross_product(current_dir, desired_dir)
+        axis.normalize()
 
-        # Rotate the missile towards the player
-        q = Quaternion.AngleAxis(axis, angle)
-        self.rotation = self.rotation * q
+        if (angle > 0.01):
+            # Rotate the missile towards the player
+            q = Quaternion.AngleAxis(axis, angle)
+            self.rotation = q * self.rotation
 
     @staticmethod
     def create_missile_mesh():
@@ -155,7 +157,7 @@ def create_terrain():
     size_x = 16
     size_z = 16
     # Number of divisions of the terrain. Vertex count scales with the square of this
-    div = 40
+    div = 20
 
     px = size_x / div
     pz = size_z / div
