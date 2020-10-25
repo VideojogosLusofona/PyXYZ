@@ -89,9 +89,9 @@ class Camera(Object3d):
         (1,1).
         For example, to convert mouse coordinates to NDC, you could do something like:
 
-        >>> mouse_pos = pygame.mouse.get_pos()
+        >>> mouse_pos = Input.get_mouse_pos()
         >>> mouse_pos = ((mouse_pos[0] / res_x) * 2 - 1, (mouse_pos[1] / res_y) * 2 - 1)
-        >>> origin, dir = camera.RayFromNDC(mouse_pos)
+        >>> origin, dir = camera.ray_from_ndc(mouse_pos)
 
         Arguments:
             pos {2-tuple} -- Screen position in NDC (normalized device coordinates)

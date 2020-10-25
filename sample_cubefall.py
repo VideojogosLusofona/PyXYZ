@@ -1,17 +1,14 @@
 """Cubefall sample application"""
-import time
+import math
 import random
-import pygame
 
-from quaternion import Quaternion
-
-from scene import Scene
+from application import Application
 from object3d import Object3d
-from camera import Camera
 from mesh import Mesh
 from material import Material
 from color import Color
 from vector3 import Vector3
+from quaternion import Quaternion
 
 GRAVITY = -9.8
 
@@ -44,94 +41,46 @@ class FallingCube(Object3d):
         q = Quaternion.AngleAxis(self.rotation_axis, self.rotation_speed * delta_time)
         self.rotation = q * self.rotation
 
-def main():
-    """Main function, it implements the application loop"""
-    # Initialize pygame, with the default parameters
-    pygame.init()
+class SampleCubefall(Application):
+    def init_scene(self):
+        # Moves the camera back 2 units
+        self.scene.camera.position -= Vector3(0, 0, 2)
 
-    # Define the size/resolution of our window
-    res_x = 640
-    res_y = 480
+        # Create the cube mesh we're going to use for every single object
+        self.cube_mesh = Mesh.create_cube((1, 1, 1))
+        # Spawn rate is one cube every 25 ms
+        self.spawn_rate = 0.025
+        # Keep a timer for the cube spawn
+        self.cube_spawn_time = self.spawn_rate
+        # Storage for all the objects created this way
+        self.falling_objects = []
 
-    # Create a window and a display surface
-    screen = pygame.display.set_mode((res_x, res_y))
-
-    # Create a scene
-    scene = Scene("TestScene")
-    scene.camera = Camera(False, res_x, res_y)
-
-    # Moves the camera back 2 units
-    scene.camera.position -= Vector3(0, 0, 2)
-
-    # Create the cube mesh we're going to use for every single object
-    cube_mesh = Mesh.create_cube((1, 1, 1))
-    # Spawn rate is one cube every 25 ms
-    spawn_rate = 0.025
-    # Keep a timer for the cube spawn
-    cube_spawn_time = spawn_rate
-    # Storage for all the objects created this way
-    falling_objects = []
-
-    # Timer
-    delta_time = 0
-    prev_time = time.time()
-
-    # Show mouse cursor
-    pygame.mouse.set_visible(True)
-    # Don't lock the mouse cursor to the game window
-    pygame.event.set_grab(False)
-
-    # Game loop, runs forever
-    while True:
-        # Process OS events
-        for event in pygame.event.get():
-            # Checks if the user closed the window
-            if event.type == pygame.QUIT:
-                # Exits the application immediately
-                return
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    # If ESC is pressed exit the application
-                    return
-
-        # Clears the screen with a very dark blue (0, 0, 20)
-        screen.fill((0, 0, 0))
-
+    def update(self, delta_time):
         # Update the cube spawn timer
-        cube_spawn_time = cube_spawn_time - delta_time
-        if cube_spawn_time < 0:
+        self.cube_spawn_time = self.cube_spawn_time - delta_time
+        if self.cube_spawn_time < 0:
             # It's time to spawn a new cube
-            cube_spawn_time = spawn_rate
+            self.cube_spawn_time = self.spawn_rate
 
             # Create a new cube, and add it to the scene
-            new_cube = FallingCube(cube_mesh)
-            scene.add_object(new_cube)
+            new_cube = FallingCube(self.cube_mesh)
+            self.scene.add_object(new_cube)
 
             # Add the new cube to the storage, so it can be updated
-            falling_objects.append(new_cube)
+            self.falling_objects.append(new_cube)
 
         # Update the cubes
-        for falling_object in falling_objects:
+        for falling_object in self.falling_objects:
             falling_object.update(delta_time)
 
             # Is the cube fallen too far?
             if falling_object.position.y < -8:
                 # Remove cube from scene
-                scene.remove_object(falling_object)
+                self.scene.remove_object(falling_object)
 
         # Update the storage, so that all cubes that have fallen too far disappear
-        falling_objects = [x for x in falling_objects if x.position.y > -8]
+        self.falling_objects = [x for x in self.falling_objects if x.position.y > -8]
 
-        # Render the scene
-        scene.render(screen)
+app = SampleCubefall()
+app.run()
 
-        # Swaps the back and front buffer, effectively displaying what we rendered
-        pygame.display.flip()
-
-        # Updates the timer, so we we know how long has it been since the last frame
-        delta_time = time.time() - prev_time
-        prev_time = time.time()
-
-
-# Run the main function
-main()

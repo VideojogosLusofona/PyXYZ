@@ -40,13 +40,11 @@ class Object3d:
         """
         return Object3d.get_prs_matrix(self.position, self.rotation, self.scale)
 
-    def render(self, screen, clip_matrix):
+    def render(self, clip_matrix):
         """
         Renders this object with the given clip_matrix.
 
         Arguments:
-
-            screen {pygame.Surface} -- Pygame surface in which this object will be rendered
 
             clip_matrix {Matrix4} -- Parent transformation matrix (including view and projection
             matrix)
@@ -60,11 +58,11 @@ class Object3d:
 
         # If there's a mesh and a material
         if ((self.material is not None) and (self.mesh is not None)):
-            self.mesh.render(screen, mesh_matrix, self.material)
+            self.mesh.render(mesh_matrix, self.material)
 
         # Traverse the children of this object, rendering them
         for child in self.children:
-            child.render(screen, mesh_matrix)
+            child.render(mesh_matrix)
 
     def add_child(self, obj):
         """

@@ -41,7 +41,7 @@ class Color:
         guarantees"""
         self.a = a
         """{number} Alpha component. Should be in the [0..1] range, although there is no
-        guarantees. Note that most Pygame functions don't use the alpha component, unless
+        guarantees. Note that most PyXYZ functions don't use the alpha component, unless
         stated otherwise, and even so it might require extra setup."""
 
     def __str__(self):
@@ -267,16 +267,16 @@ class Color:
         """
         return Color(self.r * self.a, self.g * self.a, self.b * self.a, self.a)
 
-    def tuple3(self):
-        """Converts a Color to a 3-tuple, to be used with Pygame
+    def to_tuple3(self):
+        """Converts a Color to a 3-tuple, with each component between 0 to 255, instead of 0 to 1
 
         Returns:
             Tuple - (r * 255, g * 255, b * 255)
         """
         return (self.r * 255, self.g * 255, self.b * 255)
 
-    def tuple4(self):
-        """Converts a Color to a 4-tuple, to be used with Pygame
+    def to_tuple4(self):
+        """Converts a Color to a 4-tuple, with each component between 0 to 255, instead of 0 to 1
 
         Returns:
             Tuple - (r * 255, g * 255, b * 255, a * 255)

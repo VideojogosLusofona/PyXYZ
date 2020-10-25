@@ -39,12 +39,9 @@ class Scene:
         if obj in self.objects:
             self.objects.remove(obj)
 
-    def render(self, screen):
-        """Renders this scene on the given target
+    def render(self):
+        """Renders this scene on the screen
 
-        Arguments:
-
-            screen {pygame.Surface} -- Pygame surface where the scene should be drawn
         """
         # Create clip matrix to be passed to the root-level objects, so they can be drawn
         camera_matrix = self.camera.get_camera_matrix()
@@ -54,5 +51,5 @@ class Scene:
 
         # Render all root-level objects
         for obj in self.objects:
-            obj.render(screen, clip_matrix)
+            obj.render(clip_matrix)
             

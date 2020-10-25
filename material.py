@@ -5,15 +5,15 @@ class Material:
     Describe the properties of the mesh being drawn. Currently it only supports a
     Color and a line width.
     """
-    def __init__(self, Color, name="UnknownMaterial"):
+    def __init__(self, color, name="UnknownMaterial"):
         """
         Arguments:
 
-            Color {Color} -- Color of the line
+            Color {color} -- Color of the line
 
             name {str} -- Name of the material, defaults to 'UnknownMaterial'
         """
-        self.Color = Color
+        self.color = color
         """{Color} Color of the lines on the mesh"""
         self.name = name
         """{str} Name of this material"""
