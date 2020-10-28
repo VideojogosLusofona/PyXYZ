@@ -72,13 +72,13 @@ Because of its educational purpose, PyXYZ is not meant to be installed as a Pyth
 As such, to create a program that uses PyXYZ, just copy the pyxyz directory from this repository to your new project.
 You can then use
 
-~~~
+~~~python
 import pyxyz
 ~~~
 
 or 
 
-~~~
+~~~python
 from pyxyz import *
 ~~~
 
@@ -88,14 +88,14 @@ to use PyXYZ.
 
 First the programmer sets up Pygame, using something similar to:
 
-~~~
+~~~python
 pygame.init()
 screen = pygame.display.set_mode((640, 480))
 ~~~
 
 Then, a scene can be setup:
 
-~~~
+~~~python
 # Create a scene
 scene = Scene("TestScene")
 scene.camera = Camera(False , res_x , res_y)
@@ -111,7 +111,7 @@ obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) obj1.material = Material(Color
 
 To render the scene, the programmer just has to use:
 
-~~~
+~~~python
 scene.render(screen)
 ~~~
 

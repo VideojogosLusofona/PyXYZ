@@ -325,6 +325,7 @@ class Vector3:
 
         Arguments:
             v1 {Vector3} - First vector
+            
             v2 {Vector3} - Second vector
 
         Returns:
@@ -337,6 +338,7 @@ def dot_product(v1, v2):
 
     Arguments:
         v1 {Vector3} - First vector
+
         v2 {Vector3} - Second vector
 
     Returns:
@@ -349,6 +351,7 @@ def cross_product(v1, v2):
 
     Arguments:
         v1 {Vector3} - First vector
+
         v2 {Vector3} - Second vector
 
     Returns:
