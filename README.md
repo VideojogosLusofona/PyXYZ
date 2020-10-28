@@ -106,17 +106,11 @@ See the samples repository for more information on the samples.
 
 ## Licenses
 
-All code in this repo is made available through the [GPLv3] license.
-The text and all the other files are made available through the
-[CC BY-NC-SA 4.0] license.
+All code in this repo is made available through the [MIT license].
 
 ## Metadata
 
 * Autor: [Diogo Andrade][]
 
 [Diogo Andrade]:https://github.com/DiogoDeAndrade
-[GPLv3]:https://www.gnu.org/licenses/gpl-3.0.en.html
-[CC BY-NC-SA 4.0]:https://creativecommons.org/licenses/by-nc-sa/4.0/
-[Bfxr]:https://www.bfxr.net/
-[ULHT]:https://www.ulusofona.pt/
-[lv]:https://www.ulusofona.pt/licenciatura/videojogos
+[MIT license]:(LICENSE)
