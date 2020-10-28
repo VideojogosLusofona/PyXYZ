@@ -6,7 +6,7 @@ PyGame, NumPy and NumPy-Quaternion.
 It is an object-oriented engine, with the main design focus on simplicity and ease of learning and extension, and has
 very little functionality out-of-the-box: it allows for the programmer to visualize a 3D scene using a virtual camera.
 
-![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
+![alt text](https://github.com/VideojogosLusofona/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
 
 The engine was built using:
 * Python 3.6 
@@ -63,6 +63,10 @@ from pyxyz import *
 
 to use PyXYZ.
 
+## Documentation
+
+Documentation is available at https://videojogoslusofona.github.io/PyXYZ/.
+
 ## Basic Usage
 
 First the programmer sets up Pygame, using something similar to:
@@ -85,7 +89,9 @@ obj1 = Object3d("TestObject")
 obj1.scale = Vector3(1, 1, 1)
 obj1.position = Vector3(0, 0, 0)
 # Set the material of the sphere, in this case it is red
-obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) obj1.material = Material(Color(1,0,0,1), "TestMaterial1") scene.add_object(obj1)
+obj1.mesh = Mesh.create_sphere((1, 1, 1), 12, 12) 
+obj1.material = Material(Color(1,0,0,1), "TestMaterial1") 
+scene.add_object(obj1)
 ```
 
 To render the scene, the programmer just has to use:
@@ -96,7 +102,7 @@ scene.render(screen)
 
 ## Sample applications
 
-All the sample application are in the repository https://github.com/DiogoDeAndrade/PyXYZ-Samples.
+All the sample application are in the repository https://github.com/VideojogosLusofona/PyXYZ-Samples.
 
 To use the samples, clone the repository and copy the pyxyz directory to that cloned repository.
 
@@ -108,9 +114,4 @@ See the samples repository for more information on the samples.
 
 All code in this repo is made available through the [MIT license].
 
-## Metadata
-
-* Autor: [Diogo Andrade][]
-
-[Diogo Andrade]:https://github.com/DiogoDeAndrade
 [MIT license]:(LICENSE)
