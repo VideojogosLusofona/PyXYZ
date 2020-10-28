@@ -3,6 +3,9 @@
 PyXYZ (pronounced _pyxies_) is a a simple 3D wireframe engine for education, entirely programmed in Python, using only 
 PyGame, NumPy and NumPy-Quaternion.
 
+It is an object-oriented engine, with the main design focus on simplicity and ease of learning and extension, and has
+very little functionality out-of-the-box: it allows for the programmer to visualize a 3D scene using a virtual camera.
+
 ![alt text](https://github.com/DiogoDeAndrade/PyXYZ/raw/master/screenshots/terrain.png "Sample terrain application")
 
 The engine was built using:
@@ -12,30 +15,6 @@ The engine was built using:
 * Numpy-quaternion (https://pypi.org/project/numpy-quaternion/)
 
 This engine was tested with Python 3.6, 3.7, 3.8 and 3.9.
-
-## Architecture
-
-PyXYZ is an object-oriented engine, with the main design focus on simplicity and ease of learning and extension.
-
-It provides very little functionality out-of-the-box: it allows for the programmer to visualize a 3D scene using a virtual camera.
-
-A scene is composed of 3D objects organized in an optional hierarchical fashion, and each object contains a polygonal mesh and a material that controls how the mesh is rendered.
-
-At the most basic level, it has a few elementary helper classes, like Color, which describes a Color with separate red, green, blue and alpha channels, and Vector3, a straightforward 3D vector implementation.
-
-The core of the engine is comprised of the Scene, Object3d, Camera and Mesh classes, which handle the rendering itself.
-
-An Object3d has the position, rotation and scaling (PRS properties), all of which are in local space. It also stores the reference for a mesh and a material, and contains a list of child Object3d, which enables the user to build the hierarchical scene graph.
-
-A Scene stores the scene graph with any number of Objects3d on the root level. It also contains a camera, that is used for the rendering.
-
-The Camera is derived from Object3d, so that it can be treated in the same way, and even parented to other objects, or vice-versa. It also provides a simple function to convert from screen space coordinates to a ray origin/position.
-
-The Mesh contains a list of polygons, with each polygon being a list of vertex positions in local space. There are no indexing primitives as simplicity is the main driver of the engine.
-
-The Material class stores the rendering properties like line Color and width. A single material can be used by multiple meshes for rendering.
-
-The current implementation of PyXYZ uses Pygame for the actual rendering. We chose Pygame for its simplicity, support for polygon rendering and full software implementation.
 
 ## Installation
 
