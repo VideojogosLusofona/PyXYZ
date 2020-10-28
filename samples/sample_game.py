@@ -7,14 +7,7 @@ import pygame
 import numpy as np
 from quaternion import from_rotation_vector
 
-from scene import Scene
-from object3d import Object3d
-from camera import Camera
-from mesh import Mesh
-from material import Material
-from color import Color
-from vector3 import Vector3, dot_product, cross_product
-from perlin import noise2d
+from pyxyz import *
 
 class Missile(Object3d):
     """Missile class.

@@ -1,1 +1,1 @@
-pdoc3 --html --force --output-dir doc .
+pdoc3 --html --force --output-dir doc pyxyz

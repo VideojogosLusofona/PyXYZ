@@ -3,16 +3,9 @@ import time
 import math
 import pygame
 import pygame.freetype
-
 from quaternion import from_rotation_vector
-from scene import Scene
-from object3d import Object3d
-from camera import Camera
-from mesh import Mesh
-from material import Material
-from color import Color
-from vector3 import Vector3, dot_product, cross_product
-from perlin import noise2d
+
+from pyxyz import *
 
 def sample_height(x, y):
     """Computes the height of the terrain at the given x,y point, using

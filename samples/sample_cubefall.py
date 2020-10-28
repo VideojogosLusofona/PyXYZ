@@ -2,16 +2,13 @@
 import time
 import random
 import pygame
+import sys
+import os
 
 from quaternion import from_rotation_vector
 
-from scene import Scene
-from object3d import Object3d
-from camera import Camera
-from mesh import Mesh
-from material import Material
-from color import Color
-from vector3 import Vector3
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from pyxyz import *
 
 GRAVITY = -9.8
 

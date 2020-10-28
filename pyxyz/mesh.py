@@ -1,7 +1,7 @@
 """Mesh class definition"""
 import math
 import pygame
-from vector3 import Vector3
+from pyxyz.vector3 import Vector3
 
 class Mesh:
     """Mesh class.

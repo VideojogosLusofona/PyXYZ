@@ -3,8 +3,8 @@
 import math
 import numpy as np
 from quaternion import as_rotation_matrix
-from vector3 import Vector3
-from object3d import Object3d
+from pyxyz.vector3 import Vector3
+from pyxyz.object3d import Object3d
 
 class Camera(Object3d):
     """Camera class.

@@ -1,5 +1,5 @@
 """Scene class definition"""
-from camera import Camera
+from pyxyz.camera import Camera
 
 class Scene:
     """Scene class.

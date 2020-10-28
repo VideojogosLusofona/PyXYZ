@@ -2,7 +2,7 @@
 
 import numpy as np
 from quaternion import quaternion, as_rotation_matrix
-from vector3 import Vector3
+from pyxyz.vector3 import Vector3
 
 class Object3d:
     """3d object class.
